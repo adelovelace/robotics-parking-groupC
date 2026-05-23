@@ -1,0 +1,1 @@
+/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/build/robomaster_msgs/rosidl_typesupport_fastrtps_c/robomaster_msgs/msg/detail/speaker_command__rosidl_typesupport_fastrtps_c.h

@@ -1,0 +1,13 @@
+<!-- 
+    Combined mission launcher for exploration and parking.
+    Both nodes share the same namespace so they communicate over relative topics:
+    cmd_vel, odom and parking_target.
+ -->
+<launch>
+  <arg name="name" default="rm0"/>
+
+  <set_parameter name="use_sim_time" value="true" />
+
+  <node pkg="robomaster_example" exec="controller_node" namespace="$(var name)" output="screen" />
+  <node pkg="robomaster_example" exec="controller_park4" namespace="$(var name)" output="screen" />
+</launch>

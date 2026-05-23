@@ -1,0 +1,1 @@
+/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/build/robomaster_msgs/rosidl_typesupport_fastrtps_cpp/robomaster_msgs/msg/detail/sensor_adapter__rosidl_typesupport_fastrtps_cpp.hpp

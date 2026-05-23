@@ -1,0 +1,1 @@
+/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/build/robomaster_msgs/rosidl_generator_c/robomaster_msgs/action/detail/move_servo__type_support.h

@@ -1,0 +1,1 @@
+/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/build/robomaster_msgs/rosidl_cmake/srv/GetIO_Request.msg

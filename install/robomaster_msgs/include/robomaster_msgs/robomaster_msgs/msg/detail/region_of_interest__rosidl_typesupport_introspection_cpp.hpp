@@ -1,0 +1,1 @@
+/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/build/robomaster_msgs/rosidl_typesupport_introspection_cpp/robomaster_msgs/msg/detail/region_of_interest__rosidl_typesupport_introspection_cpp.hpp

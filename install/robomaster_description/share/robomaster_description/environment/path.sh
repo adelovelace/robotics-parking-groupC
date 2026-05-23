@@ -1,0 +1,1 @@
+/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/.pixi/envs/default/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh
