@@ -9,8 +9,7 @@ from geometry_msgs.msg import Twist, Pose
 from nav_msgs.msg import Odometry
 
 import sys
-import os
-import termios
+
 import numpy as np
 import cv2
 import warnings
@@ -26,15 +25,6 @@ warnings.filterwarnings("ignore", category=RuntimeWarning, module="shapely")
 # Absolute import fixed for ROS 2 package structure
 from robomaster_example.vision import FloorProjectiveTransform
 
-# Key bindings for movement
-KEY_BINDINGS = {
-    'w': (1.0, 0.0, 0.0),  # forward
-    's': (-1.0, 0.0, 0.0),  # backward
-    'a': (0.0, 1.0, 0.0),  # strafe left
-    'd': (0.0, -1.0, 0.0),  # strafe right
-    'q': (0.0, 0.0, 1.0),  # turn left
-    'e': (0.0, 0.0, -1.0),  # turn right
-}
 
 # Movement speeds
 LINEAR_SPEED = 0.5  # [m/s]
@@ -43,46 +33,6 @@ ANGULAR_SPEED = 1.0  # [rad/s]
 # Synchronizer latency window
 SYNC_SLOP_S = 0.1
 
-USAGE_MSG = """
-RoboMaster Modular Parking System
----------------------------------
-   Q - turn left    W - forward     E - turn right
-   A - strafe left  S - backward    D - strafe right
-
-   [ F ] - Trigger Snapshot (Add currently visible area to global map)
-
-Press any movement key to drive. Release to stop.
-Press Ctrl+C to quit.
-"""
-
-
-class KeyboardReader:
-    """Reads non-blocking keypresses from the terminal."""
-
-    def __init__(self):
-        self.fd = os.open('/dev/tty', os.O_RDONLY | os.O_NONBLOCK)
-        self.old_settings = termios.tcgetattr(self.fd)
-        new_settings = termios.tcgetattr(self.fd)
-        new_settings[3] = new_settings[3] & ~(termios.ICANON | termios.ECHO)
-        new_settings[6][termios.VMIN] = 0
-        new_settings[6][termios.VTIME] = 0
-        termios.tcsetattr(self.fd, termios.TCSADRAIN, new_settings)
-
-    def read_key(self):
-        try:
-            ch = os.read(self.fd, 1)
-            if ch:
-                return ch.decode('utf-8', errors='ignore').lower()
-        except (OSError, BlockingIOError):
-            pass
-        return None
-
-    def close(self):
-        try:
-            termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old_settings)
-            os.close(self.fd)
-        except Exception:
-            pass
 
 
 class GridMap:
@@ -266,17 +216,16 @@ class ControllerNode(Node):
         self.odom_frame = 'odom'
         self.base_frame = 'base_link'
         self.vel_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
+
         parking_target_qos = QoSProfile(
             reliability=ReliabilityPolicy.RELIABLE,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
             history=HistoryPolicy.KEEP_LAST,
             depth=1,
         )
-        self.parking_target_publisher = self.create_publisher(
-            Float32MultiArray,
-            'parking_target',
-            parking_target_qos,
-        )
+
+        # Publisher for parking target coordinates (x, y) in the robot's local frame
+        self.parking_target_pub = self.create_publisher(Float32MultiArray, 'parking_target', parking_target_qos)
 
         self.br = CvBridge()
         self.camera_info = None
@@ -285,21 +234,26 @@ class ControllerNode(Node):
         self.camera_offset_x = 0.02548
         self.camera_offset_y = -0.00047
 
-        # Keyboard Driving States
+        
         self.target_linear_x = 0.0
         self.target_linear_y = 0.0
         self.target_angular_z = 0.0
-        self.keyboard = KeyboardReader()
+       
+
+        # Parking mode state
+        self.parking_mode = False
+        self.parking_target = None
+        self.parking_delegated = False
+        self.robot_pose_2d = (0.0, 0.0, 0.0)
 
         # Instantiate Logic Modules
         self.grid_map = GridMap(resolution=0.02)
-        self.parking_estimator = ParkingEstimator(safety_margin=0.12, min_area=0.05)
+        self.parking_estimator = ParkingEstimator(safety_margin=0.16, min_area=0.05)
         self.visualization = VisualizationModule(map_size=600, scale=100.0)
 
-        self.take_snapshot = False
+
         self.parking_corners = None
         self.prev_parking_corners = None  # Tracks changes for the change logger
-        self.control_handed_off = False
 
         # Homography calibration
         self.T = FloorProjectiveTransform.from_points()
@@ -366,7 +320,6 @@ class ControllerNode(Node):
             # Parking spot discovered for the first time
             coords_str = ", ".join([f"[{pt[0]:.3f}, {pt[1]:.3f}]" for pt in self.parking_corners])
             self.get_logger().info(f"[PARKING STATUS] DISCOVERED! Corners: {coords_str}")
-            self.publish_parking_target()
 
         elif self.parking_corners is None and self.prev_parking_corners is not None:
             # Parking spot lost
@@ -384,24 +337,37 @@ class ControllerNode(Node):
         else:
             self.prev_parking_corners = None
 
-    def publish_parking_target(self):
-        if self.control_handed_off or self.parking_corners is None or len(self.parking_corners) != 4:
-            return
+    def compute_parking_velocity(self):
+        """Computes velocity commands to move robot into parking spot."""
+        if self.parking_corners is None or self.parking_target is None:
+            return 0.0, 0.0, 0.0
 
-        msg = Float32MultiArray()
-        msg.data = self.parking_corners.astype(np.float32).reshape(-1).tolist()
-        self.parking_target_publisher.publish(msg)
+        x, y, theta = self.robot_pose_2d
+        target_x, target_y = self.parking_target
 
-        self.control_handed_off = True
-        self.target_linear_x = 0.0
-        self.target_linear_y = 0.0
-        self.target_angular_z = 0.0
-        self.vel_publisher.publish(Twist())
-        self.get_logger().info('Published parking_target and released cmd_vel control to parking node.')
+        # Distance to target
+        dx = target_x - x
+        dy = target_y - y
+        dist = np.sqrt(dx**2 + dy**2)
+
+        # Target angle
+        target_angle = np.arctan2(dy, dx)
+        angle_diff = target_angle - theta
+        angle_diff = np.arctan2(np.sin(angle_diff), np.cos(angle_diff))
+
+        # Proportional control
+        lin_speed = 0.3 * np.clip(dist, 0, 1)
+        ang_speed = 1.0 * np.clip(angle_diff, -1, 1)
+
+        if dist < 0.1:
+            return 0.0, 0.0, 0.0
+
+        return lin_speed, 0.0, ang_speed
 
     def synced_callback(self, image_msg: Image, odom_msg: Odometry):
         try:
             x, y, theta = self.pose3d_to_2d(odom_msg.pose.pose)
+            self.robot_pose_2d = (x, y, theta)
             camera_pose_matrix = self.get_camera_pose_matrix(x, y, theta)
 
             # Vision boundary extraction
@@ -418,14 +384,13 @@ class ControllerNode(Node):
                 empty_space_stride=3,
             )
 
-            # Update Grid Mapping database on user keystroke snapshot
-            if self.take_snapshot:
-                self.grid_map.update_boundary(world_points)
-                self.grid_map.update_empty_space(empty_world_points)
-                self.take_snapshot = False
+            # Update global map with new snapshot data
+            self.grid_map.update_boundary(world_points)
+            self.grid_map.update_empty_space(empty_world_points)
+            
 
-                b_pts, e_pts = self.grid_map.get_points()
-                self.get_logger().info(f"Flashed snapshot! Boundary: {len(b_pts)}, Empty: {len(e_pts)}")
+            b_pts, e_pts = self.grid_map.get_points()
+            self.get_logger().info(f"Flashed snapshot! Boundary: {len(b_pts)}, Empty: {len(e_pts)}")
 
             # Continuously solve parking layout on current global map state
             boundary_map_pts, empty_map_pts = self.grid_map.get_points()
@@ -433,6 +398,19 @@ class ControllerNode(Node):
 
             # Check and log parking state differences
             self.check_and_log_parking_updates()
+
+            # Delegate to control park4 node if parking spot is found and not yet delegated
+            if self.parking_corners is not None and not self.parking_delegated:
+                
+        
+                msg = Float32MultiArray()
+                msg.data = self.parking_corners.flatten().tolist()  #flatten points : [x1, y1, x2, y2, x3, y3, x4, y4]
+                self.parking_target_pub.publish(msg)
+                
+                self.parking_delegated = True
+                self.get_logger().info("==================================================")
+                self.get_logger().info("PARKING SPOT FOUND: Delegating control to park4 node")
+                self.get_logger().info("==================================================")
 
             # Delegate all display renderings to the VisualizationModule
             bgr_frame_with_overlays = self.visualization.draw_camera_overlay(current_frame, result)
@@ -448,34 +426,36 @@ class ControllerNode(Node):
             self.get_logger().error(f"Synced callback processing failed: {e}")
 
     def update_callback(self):
-        if self.control_handed_off:
-            return
-
-        key = self.keyboard.read_key()
-
-        if key is not None:
-            if key == 'f':
-                self.take_snapshot = True
-                self.get_logger().info("Snapshot capture triggered!")
-            elif key in KEY_BINDINGS:
-                lin_x, lin_y, ang_z = KEY_BINDINGS[key]
-                self.target_linear_x = lin_x * LINEAR_SPEED
-                self.target_linear_y = lin_y * LINEAR_SPEED
-                self.target_angular_z = ang_z * ANGULAR_SPEED
-            else:
-                self.target_linear_x = 0.0
-                self.target_linear_y = 0.0
-                self.target_angular_z = 0.0
-        else:
-            self.target_linear_x = 0.0
-            self.target_linear_y = 0.0
-            self.target_angular_z = 0.0
-
         cmd_vel = Twist()
-        cmd_vel.linear.x = self.target_linear_x
-        cmd_vel.linear.y = self.target_linear_y
-        cmd_vel.angular.z = self.target_angular_z
-        self.vel_publisher.publish(cmd_vel)
+
+        if self.parking_delegated:
+            pass  # Control is delegated to park4 node, so we do not publish cmd_vel here
+        else:
+            b_pts, _ = self.grid_map.get_points()
+            obstacle_near = False
+
+            if len(b_pts) > 0:
+                x, y, theta = self.robot_pose_2d
+                # Check if any boundary points are within 0.4 meters of the robot's current position
+                dists = np.sqrt((b_pts[:, 0] - x)**2 + (b_pts[:, 1] - y)**2)
+                min_dist = np.min(dists)
+                
+                if min_dist < 0.25:
+                    obstacle_near = True
+            
+            if obstacle_near:
+                # Rotate in place to scan surroundings
+                self.target_linear_x = 0.0
+                self.target_angular_z = 0.5 * ANGULAR_SPEED
+            else:
+                # Move forward
+                self.target_linear_x = 0.3 * LINEAR_SPEED
+                self.target_angular_z = 0.0
+
+            cmd_vel.linear.x = self.target_linear_x
+            cmd_vel.linear.y = self.target_linear_y
+            cmd_vel.angular.z = self.target_angular_z
+            self.vel_publisher.publish(cmd_vel)
 
 
 def main():
@@ -492,5 +472,5 @@ def main():
 
 
 if __name__ == '__main__':
-    print(USAGE_MSG)
+
     main()

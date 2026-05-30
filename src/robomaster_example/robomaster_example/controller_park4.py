@@ -153,8 +153,8 @@ class ControllerNode(Node):
         # robomaster dimensions
         length = 0.4005842
         width = 0.2424
-        security_margin_length = 0.2
-        security_margen_width = 0.2
+        security_margin_length = -0.15
+        security_margen_width = -0.10
         len_tolerance = 0.1
         angle_tolerance = 0.1
 
@@ -200,6 +200,7 @@ class ControllerNode(Node):
 
         
     def update_callback(self):
+
         if self.state == "IDLE":
             return
 
@@ -224,8 +225,10 @@ class ControllerNode(Node):
                 return
 
             selected_corners = self.select_parking_slot_corners()
+
             if selected_corners is None:
                 return
+            
             top_l, top_r, bottom_l, bottom_r = selected_corners
 
             # evaluate dimentions of parking spot
@@ -284,31 +287,44 @@ class ControllerNode(Node):
                 dx= self.c[0] - self.x
                 dy = self.c[1] - self.y
                 distance_error = np.sqrt(dx**2 + dy**2)
-                # keep checking angle
-                desired_dir = self.c - np.array([self.x, self.y])
-                desired_theta = np.arctan2(desired_dir[1], desired_dir[0])
-                angle_error = self.normalize_angle(desired_theta - self.theta)
+                print("Here")
+                print(f"c: {self.c}, robot: ({self.x}, {self.y}), distance_error: {distance_error}")    
+
                 # check distance first
                 if abs(distance_error) < distance_tolerance:
                     cmd_vel.angular.z = 0.0
                     cmd_vel.linear.x  = 0.0
+                    self.vel_publisher.publish(cmd_vel)
+                    self.state = "PARKED"
+                    return
+                
+                # keep checking angle
+                desired_dir = self.c - np.array([self.x, self.y])
+                desired_theta = np.arctan2(desired_dir[1], desired_dir[0])
+                angle_error = self.normalize_angle(desired_theta - self.theta)
+                
+                
+                if abs(distance_error) < 0.25:
+                    cmd_vel.angular.z = 0.0
+                    cmd_vel.linear.x  = 0.2
                     self.state = "PARKED"
                     self.vel_publisher.publish(cmd_vel)
                     return
-                # check angle before going forward
-                if abs(angle_error) > (angle_tolerance*2):
-                    cmd_vel.linear.x  = 0.0
-                    if angle_error > angle_tolerance:
-                        cmd_vel.angular.z = 0.1
-                    else:
-                        cmd_vel.angular.z = -0.1
-                elif abs(distance_error) > distance_tolerance:
-                    cmd_vel.linear.x  = 0.2
-                    cmd_vel.angular.z = 0.0
-                else: #stop
-                    cmd_vel.angular.z = 0.0
-                    cmd_vel.linear.x  = 0.0
-                    self.state = "PARKED"
+                else:
+                    # check angle before going forward
+                    if abs(angle_error) > (angle_tolerance*2):
+                        cmd_vel.linear.x  = 0.0
+                        if angle_error > angle_tolerance:
+                            cmd_vel.angular.z = 0.1
+                        else:
+                            cmd_vel.angular.z = -0.1
+                    elif abs(distance_error) > distance_tolerance:
+                        cmd_vel.linear.x  = 0.2
+                        cmd_vel.angular.z = 0.0
+                    else: #stop
+                        cmd_vel.angular.z = 0.0
+                        cmd_vel.linear.x  = 0.0
+                        self.state = "PARKED"
         elif self.state == "PARKED":
              #stop
             cmd_vel.linear.x  = 0.0 # [m/s]

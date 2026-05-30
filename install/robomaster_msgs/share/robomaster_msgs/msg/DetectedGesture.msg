@@ -1,1 +1,1 @@
-/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/src/robomaster_ros/robomaster_msgs/msg/DetectedGesture.msg
+/home/edgar/Documents/USI/robotics/robotics-lab-usi-robomaster/src/robomaster_ros/robomaster_msgs/msg/DetectedGesture.msg

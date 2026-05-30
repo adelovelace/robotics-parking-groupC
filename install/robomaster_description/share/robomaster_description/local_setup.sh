@@ -1,1 +1,1 @@
-/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/build/robomaster_description/ament_cmake_environment_hooks/local_setup.sh
+/home/edgar/Documents/USI/robotics/robotics-lab-usi-robomaster/build/robomaster_description/ament_cmake_environment_hooks/local_setup.sh

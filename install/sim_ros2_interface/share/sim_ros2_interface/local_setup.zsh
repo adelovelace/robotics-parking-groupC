@@ -1,1 +1,1 @@
-/Users/andrea/Documents/robotics/Project/robotics-lab-usi-robomaster/build/sim_ros2_interface/ament_cmake_environment_hooks/local_setup.zsh
+/home/edgar/Documents/USI/robotics/robotics-lab-usi-robomaster/build/sim_ros2_interface/ament_cmake_environment_hooks/local_setup.zsh
