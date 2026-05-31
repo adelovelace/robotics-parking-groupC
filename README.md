@@ -1,170 +1,165 @@
 # RoboMaster Parking Controller (Group C)
 
-This repository contains the ROS 2 packages, CoppeliaSim scenes, and vision-based control algorithms for the RoboMaster EP automated parking task.
+This repository contains the ROS 2 packages, CoppeliaSim scenes, and vision-based control software used for the RoboMaster EP automated parking task.
 
----
+## Overview
 
-## 🛠️ INSTALLATION & SETUP
+The project includes:
 
-This guide provides step-by-step instructions for installing the RoboMaster Simulation running in CoppeliaSim using Pixi.
+- ROS 2 interfaces and launch files for simulation and control.
+- Vision-based parking point detection.
+- A state-machine parking controller for autonomous maneuvering.
+
+## Installation and Setup
+
+This section explains how to install CoppeliaSim and build the ROS 2 workspace with Pixi.
 
 ### 1. Install CoppeliaSim
 
-**For macOS:**
+#### macOS
+
 1. Download CoppeliaSim for [Apple Silicon](https://downloads.coppeliarobotics.com/V4_10_0_rev0/CoppeliaSim_Edu_V4_10_0_rev0_macOS15_arm64.zip) or [Intel](https://downloads.coppeliarobotics.com/V4_10_0_rev0/CoppeliaSim_Edu_V4_10_0_rev0_macOS13_x86_64.zip).
-2. Unzip and move to `/Applications/coppeliaSim.app`.
-3. Right-click on `coppeliaSim.app` -> Open -> Open.
-4. *Troubleshooting:* If you encounter any permission errors, please authorize coppeliaSim in your Mac's System Settings under Security & Privacy.
+2. Unzip the archive and move the app to `/Applications/coppeliaSim.app`.
+3. Open it once manually: right-click -> Open -> Open.
+4. If you get permission errors, allow CoppeliaSim in System Settings -> Privacy and Security.
 
-**For Ubuntu:**
+#### Ubuntu
+
 1. Download CoppeliaSim for [Ubuntu 22.04](https://downloads.coppeliarobotics.com/V4_10_0_rev0/CoppeliaSim_Edu_V4_10_0_rev0_Ubuntu22_04.tar.xz) or [Ubuntu 24.04](https://downloads.coppeliarobotics.com/V4_10_0_rev0/CoppeliaSim_Edu_V4_10_0_rev0_Ubuntu24_04.tar.xz).
-2. Extract CoppeliaSim in a directory of your choice (e.g., your `COURSE_FOLDER`):
-   ```bash
-   cd <COURSE_FOLDER>
-   tar xvf CoppeliaSim_Edu_V4_10_0_rev0_Ubuntu<UBUNTU_VERSION>.tar.xz
+2. Extract it in a directory of your choice:
 
+```bash
+cd <COURSE_FOLDER>
+tar xvf CoppeliaSim_Edu_V4_10_0_rev0_Ubuntu<UBUNTU_VERSION>.tar.xz
 ```
 
 ### 2. Install the RoboMaster ROS 2 Environment
 
-We use a Pixi project with all required dependencies for using the RoboMaster in CoppeliaSim.
+1. Clone the repository with submodules:
 
-1. Clone this repository (ensure you use the `--recursive` flag):
 ```bash
 git clone git@github.com:idsia-robotics/robotics-lab-usi-robomaster.git --recursive
-
 ```
 
+2. Ubuntu only: set `COPPELIASIM_ROOT_DIR` in `pixi.toml` to your local CoppeliaSim path, for example:
 
-2. **Ubuntu Only:** Customize the `COPPELIASIM_ROOT_DIR` in the `pixi.toml` of this repo to point to your CoppeliaSim installation. Change it to something like:
 ```toml
 [activation.env]
 COPPELIASIM_ROOT_DIR = "<PATH_TO_COPPELIA>/CoppeliaSim_Edu_V4_10_0_rev0_Ubuntu<UBUNTU_VERSION>"
-
 ```
 
+3. Build and install dependencies:
 
-3. Enter the repository, compile, and install the packages:
 ```bash
 cd robotics-lab-usi-robomaster
 pixi install
 pixi shell
 colcon build --symlink-install
-
 ```
 
+Note: the build may take a few minutes.
 
-*(Note: The build process can take a couple of minutes).*
+### 3. Verify the Installation (Optional)
 
-### 3. Verify the Installation (Optional but Recommended)
-
-Open a terminal and launch CoppeliaSim through pixi to ensure the ROS packages are injected correctly:
+Launch CoppeliaSim through Pixi:
 
 ```bash
 source install/setup.zsh
 pixi run coppelia
-
 ```
 
-Inside CoppeliaSim, add a RoboMaster: `Model browser -> robots -> mobile -> RoboMasterEP` and press Play.
+Inside CoppeliaSim, add a robot from:
+Model browser -> robots -> mobile -> RoboMasterEP
 
-In a new terminal, check if the Python scripts can find the robot:
+In another terminal, verify discovery from Python:
 
 ```bash
 cd src/robomaster_sim/examples
 pixi shell
 python discover.py
-
 ```
 
-*macOS 15 Troubleshooting:* If communication fails with `scan_robot_ip: exception timed out`, go to System Settings -> Privacy & Security -> Local Network and ensure your terminal app is authorized.
+macOS 15 note: if you see `scan_robot_ip: exception timed out`, enable local network permission for your terminal app.
 
----
+## Running the Parking Mission
 
-## 🚀 RUNNING THE PARKING MISSION
+Use 3 terminals.
 
-Once the setup is complete, you can run the automated parking sequence. You will need 3 separate terminal windows.
-
-### TERMINAL 1: Open CoppeliaSim
-
-Navigate to your workspace and launch the simulator:
+### Terminal 1: Run CoppeliaSim
 
 ```bash
 cd robotics-lab-usi-robomaster
 pixi run coppelia
-
 ```
 
-**Inside CoppeliaSim:**
+In CoppeliaSim:
 
-1. Add / Open the scene: `robomasterv2-clock.ttt`
-> *Note: This scene already contains the clock model (`ros2Interface helper tool + clock.ttm`) and the new robot model (`robomaster_ep_tof_v2.ttm`).*
+1. Open scene `robomasterv2-clock.ttt`.
+2. Enable real-time mode (clock icon).
+3. Press Play.
 
+This scene already includes the simulation clock helper and the `robomaster_ep_tof_v2.ttm` robot model.
 
-2. **Activate Real-Time Mode** (the clock icon).
-3. Press **PLAY** to start the simulation.
-
-### TERMINAL 2: Connect to the RoboMaster
-
-Open a new terminal, enter the pixi shell, and launch the robot's base drivers:
+### Terminal 2: Launch Base Drivers
 
 ```bash
 cd robotics-lab-usi-robomaster
 pixi shell
 source install/setup.zsh
 ros2 launch robomaster_example ep_tof.launch name:=/rm0
-
 ```
 
-### TERMINAL 3: Run the Parking Controllers
-
-Open a third terminal, source the workspace, and launch the mission.
+### Terminal 3: Launch Mission
 
 ```bash
 cd robotics-lab-usi-robomaster
 pixi shell
 source install/setup.zsh
 ros2 launch robomaster_example mission.launch
-
 ```
 
-*(Make sure that your `mission.launch` file is updated to execute BOTH the vision node and the `controller_park4` node. Alternatively, you can run the parking node manually in a 4th terminal using `ros2 run robomaster_example controller_park4`).*
+Ensure that `mission.launch` starts both the vision node and `controller_park4`.
+If needed, run the controller manually in a fourth terminal:
 
----
+```bash
+ros2 run robomaster_example controller_park4
+```
 
-## 🧠 ALGORITHM LOGIC & ASSUMPTIONS
+## Algorithm Logic and Assumptions
 
 ### Assumptions
 
-Before running the parking sequence, please consider the following environmental assumptions:
+Before starting the parking sequence, the following assumptions must hold:
 
-* The 4 parking points are dynamically given by the vision node, but they assume a rectangular-ish spot.
-* There are no moving objects which the robot can collide with during the approach.
-* There is at least 0.5m of free space in front of the parking spot to allow the robot to align itself perfectly.
+- Four parking points are provided dynamically by the vision node and represent an approximately rectangular parking spot.
+- No moving obstacles interfere with the robot during the approach.
+- At least 0.5 m of free space is available in front of the parking entrance for alignment.
 
-### State Machine Logic
+## State Machine Logic
 
-The parking controller (`controller_park4.py`) operates using a sequential state machine:
+The parking controller (`controller_park4.py`) is implemented as a sequential state machine:
 
-* **0. STATE = START**
-* Evaluate if there is enough 2D space to park based on the dimensions provided by the camera.
-* Compute the necessary geometric vectors: `c` (center), `e`, `n`, `m`, and `p` (the optimal approach point).
+### 0. STATE = START
 
+- Check whether there is enough 2D space to park using the dimensions from vision.
+- Compute geometric vectors `c` (center), `e`, `n`, `m`, and `p` (optimal approach point).
 
-* **1. STATE = MOVE_TO_P**
-* Rotate towards point `p` (located exactly 0.5 m in front of the parking spot entrance).
-* Drive forward until point `p` is reached.
+### 1. STATE = MOVE_TO_P
 
+- Rotate toward point `p`, located 0.5 m in front of the parking entrance.
+- Move forward until point `p` is reached.
 
-* **2. STATE = ROTATE_TO_FACE_PARKING**
-* Rotate in place to face `c` (the absolute center of the parking spot).
+### 2. STATE = ROTATE_TO_FACE_PARKING
 
+- Rotate in place to face point `c` (the parking center).
 
-* **3. STATE = FORWARD**
-* Drive straight into the parking spot towards `c`.
-* Disable angle correction in the last 25cm to prevent infinite spinning loops due to proximity math.
+### 3. STATE = FORWARD
 
+- Move forward toward `c` to enter the parking spot.
+- Disable angle correction during the last 25 cm to avoid oscillations near the goal.
 
-* **4. STATE = PARKED**
-* Stop the motors completely and log a success message once the robot is within 5cm of the center.
+### 4. STATE = PARKED
+
+- Stop all motors.
+- Log success when the robot is within 5 cm of the parking center.
 
