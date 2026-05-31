@@ -1,0 +1,15 @@
+<launch>
+  <arg name="name" default="rm0"/>
+  <arg name="use_visualization" default="true"/>
+
+  <include file="$(find-pkg-share robomaster_example)/launch/ep_tof.launch">
+    <arg name="name" value="$(var name)"/>
+  </include>
+
+  <node pkg="robomaster_example" exec="vision_observer_node" namespace="$(var name)" output="screen"/>
+  <node pkg="robomaster_example" exec="map_node" namespace="$(var name)" output="screen"/>
+  <node pkg="robomaster_example" exec="slot_detector_node" namespace="$(var name)" output="screen"/>
+  <node pkg="robomaster_example" exec="mission_controller_node" namespace="$(var name)" output="screen"/>
+  <node pkg="robomaster_example" exec="controller_park4" namespace="$(var name)" output="screen"/>
+  <node pkg="robomaster_example" exec="visualization_node" namespace="$(var name)" output="screen" if="$(var use_visualization)"/>
+</launch>
