@@ -153,8 +153,8 @@ class ControllerNode(Node):
         # robomaster dimensions
         length = 0.4005842
         width = 0.2424
-        security_margin_length = -0.15
-        security_margen_width = -0.10
+        security_margin_length = 0.0
+        security_margen_width = 0.0
         len_tolerance = 0.1
         angle_tolerance = 0.1
 
@@ -311,9 +311,9 @@ class ControllerNode(Node):
                 angle_error = self.normalize_angle(desired_theta - self.theta)
                 
                 
-                if abs(distance_error) < 0.25:
+                if abs(distance_error) < distance_tolerance:
                     cmd_vel.angular.z = 0.0
-                    cmd_vel.linear.x  = 0.2
+                    cmd_vel.linear.x  = 0.0
                     self.state = "PARKED"
                     self.vel_publisher.publish(cmd_vel)
                     return

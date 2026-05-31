@@ -73,11 +73,31 @@ class GridMap:
 class ParkingEstimator:
     """Computes the optimal oriented rectangle for robot parking."""
 
-    def __init__(self, safety_margin: float = 0.12, min_area: float = 0.05):
+    def __init__(
+            self,
+            safety_margin: float = 0.10,
+            min_area: float = 0.1025,
+            min_width: float = 0.26,
+            min_length: float = 0.42):
         self.safety_margin = safety_margin
         self.min_area = min_area
+        self.min_width = min_width
+        self.min_length = min_length
 
-    def estimate(self, boundary_pts: np.ndarray, empty_pts: np.ndarray) -> np.ndarray | None:
+    def order_corners_for_controller(self, rect_coords: np.ndarray, robot_position: np.ndarray) -> np.ndarray:
+        edge_midpoints = np.array([
+            (rect_coords[i] + rect_coords[(i + 1) % 4]) / 2.0 
+            for i in range(4)
+        ])
+        # Compute the distance from the robot to each midpoint and returns the index of the smallest one
+        closest_edge_index = int(np.argmin(np.linalg.norm(edge_midpoints - robot_position, axis=1)))
+        return np.roll(rect_coords, -closest_edge_index, axis=0)
+
+    def estimate(
+            self,
+            boundary_pts: np.ndarray,
+            empty_pts: np.ndarray,
+            robot_position: np.ndarray) -> np.ndarray | None:
         """Runs the spatial clustering & Shapely minimum bounding box estimation."""
         if len(boundary_pts) < 3 or len(empty_pts) < 4:
             return None
@@ -132,7 +152,15 @@ class ParkingEstimator:
         if parking_hull.geom_type == 'Polygon' and parking_hull.area > 1e-4:
             parking_rect = parking_hull.minimum_rotated_rectangle
             if parking_rect.geom_type == 'Polygon' and parking_rect.area >= self.min_area:
-                return np.array(parking_rect.exterior.coords)[:4]
+                rect_coords = np.array(parking_rect.exterior.coords)[:4]
+                ordered_coords = self.order_corners_for_controller(rect_coords, robot_position)
+                bottom_width = np.linalg.norm(ordered_coords[1] - ordered_coords[0])
+                top_width = np.linalg.norm(ordered_coords[2] - ordered_coords[3])
+                left_length = np.linalg.norm(ordered_coords[3] - ordered_coords[0])
+                right_length = np.linalg.norm(ordered_coords[2] - ordered_coords[1])
+                if min(bottom_width, top_width) >= self.min_width and \
+                        min(left_length, right_length) >= self.min_length:
+                    return ordered_coords
 
         return None
 
@@ -248,7 +276,7 @@ class ControllerNode(Node):
 
         # Instantiate Logic Modules
         self.grid_map = GridMap(resolution=0.02)
-        self.parking_estimator = ParkingEstimator(safety_margin=0.16, min_area=0.05)
+        self.parking_estimator = ParkingEstimator(safety_margin=0.1, min_area=0.1025, min_width=0.26, min_length=0.42)
         self.visualization = VisualizationModule(map_size=600, scale=100.0)
 
 
@@ -394,7 +422,11 @@ class ControllerNode(Node):
 
             # Continuously solve parking layout on current global map state
             boundary_map_pts, empty_map_pts = self.grid_map.get_points()
-            self.parking_corners = self.parking_estimator.estimate(boundary_map_pts, empty_map_pts)
+            self.parking_corners = self.parking_estimator.estimate(
+                boundary_map_pts,
+                empty_map_pts,
+                np.array([x, y]),
+            )
 
             # Check and log parking state differences
             self.check_and_log_parking_updates()

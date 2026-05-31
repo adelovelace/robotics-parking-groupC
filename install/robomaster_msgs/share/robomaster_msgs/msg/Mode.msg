@@ -1,1 +1,1 @@
-/home/edgar/Documents/USI/robotics/robotics-lab-usi-robomaster/src/robomaster_ros/robomaster_msgs/msg/Mode.msg
+/Users/jimenatagle/Documents/1.Education/2.USI/4.semester/Robotics/project/robotics-parking-groupC/src/robomaster_ros/robomaster_msgs/msg/Mode.msg

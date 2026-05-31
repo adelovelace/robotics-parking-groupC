@@ -1,1 +1,0 @@
-/home/edgar/Documents/USI/robotics/robotics-lab-usi-robomaster/.pixi/envs/default/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh

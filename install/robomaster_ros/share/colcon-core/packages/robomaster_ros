@@ -1,1 +1,1 @@
-cv_bridge:geometry_msgs:nav_msgs:rclpy:robomaster_msgs:sensor_msgs:std_msgs:std_srvs
+cv_bridge:geometry_msgs:nav_msgs:rclpy:robomaster_description:robomaster_msgs:sensor_msgs:std_msgs:std_srvs
