@@ -83,7 +83,7 @@ macOS 15 note: if you see `scan_robot_ip: exception timed out`, enable local net
 
 ## Running the Parking Mission
 
-Use 3 terminals.
+Use 2 terminals.
 
 ### Terminal 1: Run CoppeliaSim
 
@@ -94,22 +94,13 @@ pixi run coppelia
 
 In CoppeliaSim:
 
-1. Open scene `robomasterv2-clock.ttt`.
+1. Open scene `battle2`.
 2. Enable real-time mode (clock icon).
 3. Press Play.
 
 This scene already includes the simulation clock helper and the `robomaster_ep_tof_v2.ttm` robot model.
 
-### Terminal 2: Launch Base Drivers
-
-```bash
-cd robotics-lab-usi-robomaster
-pixi shell
-source install/setup.zsh
-ros2 launch robomaster_example ep_tof.launch name:=/rm0
-```
-
-### Terminal 3: Launch Mission
+### Terminal 2: Launch Mission
 
 ```bash
 cd robotics-lab-usi-robomaster
@@ -118,8 +109,9 @@ source install/setup.zsh
 ros2 launch robomaster_example mission.launch
 ```
 
-Ensure that `mission.launch` starts both the vision node and `controller_park4`.
-If needed, run the controller manually in a fourth terminal:
+`mission.launch` already includes `ep_tof.launch` and starts both controller nodes.
+Only launch `ep_tof.launch` separately for debugging.
+If needed, run the parking controller manually in a third terminal:
 
 ```bash
 ros2 run robomaster_example controller_park4
