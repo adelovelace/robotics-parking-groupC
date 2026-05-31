@@ -11,7 +11,7 @@ from std_msgs.msg import Float32MultiArray, String
 from transforms3d._gohlketransforms import euler_from_quaternion
 
 from robomaster_example.logic.parking_estimator import ParkingEstimator
-from robomaster_example.logic.slot_geometry import choose_safe_entry_edge, rectangle_descriptor
+from robomaster_example.logic.slot_geometry import choose_safe_entry_edge, ordered_slot_fits, rectangle_descriptor
 from robomaster_example.logic.topic_codec import pack_slot, unpack_map_points
 
 
@@ -19,6 +19,8 @@ class SlotDetectorNode(Node):
     """Estimate parking hypotheses and decide whether they have a safe entry side."""
 
     VALIDATION_D_BACK = 0.50
+    MIN_SLOT_WIDTH = 0.2424
+    MIN_SLOT_LENGTH = 0.40
     ENTRY_SIDE_WALL_DIST = 0.06
     ENTRY_SIDE_WALL_BLOCK = 0.45
     ENTRY_ROUTE_CLEARANCE = 0.20
@@ -91,6 +93,23 @@ class SlotDetectorNode(Node):
             debug["reason"] = "no_safe_entry"
             self.publish_debug(debug)
             self.get_logger().info("[SLOT] Candidate detected, but no safe entry edge yet.")
+            return
+
+        fits, dims = ordered_slot_fits(
+            ordered,
+            min_width=self.MIN_SLOT_WIDTH,
+            min_length=self.MIN_SLOT_LENGTH,
+        )
+        debug["ordered_dimensions"] = dims
+        if not fits:
+            self.actionable_pub.publish(pack_slot(None, actionable=False))
+            debug["reason"] = "ordered_slot_too_small"
+            self.publish_debug(debug)
+            self.get_logger().info(
+                "[SLOT] Candidate detected, but ordered slot is too small: "
+                f"bottom_width={dims['bottom_width']:.3f}, top_width={dims['top_width']:.3f}, "
+                f"left_length={dims['left_length']:.3f}, right_length={dims['right_length']:.3f}"
+            )
             return
 
         selected = entry_debug.get("selected", {}) if isinstance(entry_debug, dict) else {}

@@ -108,6 +108,28 @@ def order_slot_by_entry_edge(corners: np.ndarray, edge_idx: int) -> np.ndarray:
     return np.vstack([top_l, top_r, bottom_l, bottom_r])
 
 
+def ordered_slot_fits(
+    ordered_slot: np.ndarray,
+    *,
+    min_width: float,
+    min_length: float,
+) -> tuple[bool, dict]:
+    pts = np.asarray(ordered_slot, dtype=np.float64).reshape(4, 2)
+    top_l, top_r, bottom_l, bottom_r = pts
+    bottom_width = float(np.linalg.norm(bottom_r - bottom_l))
+    top_width = float(np.linalg.norm(top_r - top_l))
+    left_length = float(np.linalg.norm(top_l - bottom_l))
+    right_length = float(np.linalg.norm(top_r - bottom_r))
+    dims = {
+        "bottom_width": bottom_width,
+        "top_width": top_width,
+        "left_length": left_length,
+        "right_length": right_length,
+    }
+    fits = min(bottom_width, top_width) >= min_width and min(left_length, right_length) >= min_length
+    return bool(fits), dims
+
+
 def choose_safe_entry_edge(
     corners: np.ndarray,
     boundary_pts: np.ndarray,
