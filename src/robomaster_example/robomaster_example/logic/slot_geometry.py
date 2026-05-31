@@ -19,6 +19,10 @@ def min_distance(point: np.ndarray, points: np.ndarray) -> float:
 def rectangle_descriptor(corners: np.ndarray) -> tuple[np.ndarray, float, np.ndarray, float]:
     pts = np.asarray(corners, dtype=np.float64).reshape(4, 2)
     center = np.mean(pts, axis=0)
+    # Normalize to cyclic polygon order so this works both for raw rectangle
+    # corners and for parking-ordered [top_l, top_r, bottom_l, bottom_r].
+    angles = np.arctan2(pts[:, 1] - center[1], pts[:, 0] - center[0])
+    pts = pts[np.argsort(angles)]
     edges = np.roll(pts, -1, axis=0) - pts
     lengths = np.linalg.norm(edges, axis=1)
     longest_idx = int(np.argmax(lengths))

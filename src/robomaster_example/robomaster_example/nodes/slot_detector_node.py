@@ -26,7 +26,7 @@ class SlotDetectorNode(Node):
 
     def __init__(self):
         super().__init__("slot_detector_node")
-        self.estimator = ParkingEstimator(safety_margin=0.16, min_area=0.05)
+        self.estimator = ParkingEstimator(safety_margin=0.1, min_area=0.1025)
         self.robot_pose = None
         self.boundary = np.empty((0, 2), dtype=np.float64)
         self.empty = np.empty((0, 2), dtype=np.float64)

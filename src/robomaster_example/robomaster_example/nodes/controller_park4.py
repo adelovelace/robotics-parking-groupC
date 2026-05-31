@@ -176,8 +176,9 @@ class ControllerNode(Node):
     def evaluate_space(self, top_l, top_r, bottom_l, bottom_r):
         robot_length = 0.4005842
         robot_width = 0.2424
-        security_margin_length = -0.15
-        security_margin_width = -0.10
+        security_margin_length = 0.0
+        security_margin_width = 0.0
+        dimension_epsilon = 0.01
         len_tolerance = 0.1
         angle_tolerance = 0.1
 
@@ -195,10 +196,10 @@ class ControllerNode(Node):
             self.get_logger().warn('[PARK4] Rejected parking slot: degenerate side length.')
             return False
 
-        if ((width_bottom - robot_width) < security_margin_width) or \
-                ((width_top - robot_width) < security_margin_width) or \
-                ((len_left - robot_length) < security_margin_length) or \
-                ((len_right - robot_length) < security_margin_length):
+        if ((width_bottom - robot_width) < (security_margin_width - dimension_epsilon)) or \
+                ((width_top - robot_width) < (security_margin_width - dimension_epsilon)) or \
+                ((len_left - robot_length) < (security_margin_length - dimension_epsilon)) or \
+                ((len_right - robot_length) < (security_margin_length - dimension_epsilon)):
             self.get_logger().warn('[PARK4] Rejected parking slot: dimensions too small.')
             return False
 
