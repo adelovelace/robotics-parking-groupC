@@ -91,8 +91,8 @@ class ParkingEstimator:
 
         inside_coords = []
         if hasattr(inside_empty, 'geoms'):
-            inside_coords = [[p.x, p.y] for p in inside_empty.geoms if p.geom_type == 'Point']
-        elif inside_empty.geom_type == 'Point':
+            inside_coords = [[p.x, p.y] for p in inside_empty.geoms if p.geom_type == 'Point' and not p.is_empty]
+        elif inside_empty.geom_type == 'Point' and not inside_empty.is_empty:
             inside_coords = [[inside_empty.x, inside_empty.y]]
 
         if len(inside_coords) < 4:
@@ -444,13 +444,17 @@ class ControllerNode(Node):
                     obstacle_near = True
             
             if obstacle_near:
+                print()
+                print(f"Obstacle detected nearby (distance: {min_dist:.2f} m). Rotating to scan surroundings.")
+                self.get_logger().warn(f"Obstacle detected nearby (distance: {min_dist:.2f} m). Rotating to scan surroundings.")
+                print()
                 # Rotate in place to scan surroundings
                 self.target_linear_x = 0.0
-                self.target_angular_z = 0.5 * ANGULAR_SPEED
+                self.target_angular_z = 1.0 * ANGULAR_SPEED
             else:
                 # Move forward
                 self.target_linear_x = 0.3 * LINEAR_SPEED
-                self.target_angular_z = 0.0
+                self.target_angular_z = 0.07 
 
             cmd_vel.linear.x = self.target_linear_x
             cmd_vel.linear.y = self.target_linear_y

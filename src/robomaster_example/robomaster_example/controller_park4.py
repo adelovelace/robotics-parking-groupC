@@ -284,8 +284,15 @@ class ControllerNode(Node):
                 self.state = "FORWARD"
         elif self.state == "FORWARD": 
                 # move forward until c (center of parking spot)
-                dx= self.c[0] - self.x
-                dy = self.c[1] - self.y
+
+                target_x = self.m[0] - (self.n[0] * 0.15)
+                target_y = self.m[1] - (self.n[1] * 0.15)
+
+                dx = target_x - self.x
+                dy = target_y - self.y
+                
+                # dx= self.c[0] - self.x
+                # dy = self.c[1] - self.y
                 distance_error = np.sqrt(dx**2 + dy**2)
                 print("Here")
                 print(f"c: {self.c}, robot: ({self.x}, {self.y}), distance_error: {distance_error}")    
