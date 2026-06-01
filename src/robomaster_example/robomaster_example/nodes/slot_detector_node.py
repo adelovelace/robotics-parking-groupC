@@ -28,13 +28,19 @@ class SlotDetectorNode(Node):
 
     def __init__(self):
         super().__init__("slot_detector_node")
+
+        # Parking slot estimator based on global boundary and empty-space points
         self.estimator = ParkingEstimator(safety_margin=0.05, min_area=0.1025)
+
         self.robot_pose = None
         self.boundary = np.empty((0, 2), dtype=np.float64)
         self.empty = np.empty((0, 2), dtype=np.float64)
 
+        # Subscribe to global map and odometry
         self.map_sub = self.create_subscription(Float32MultiArray, "map/global_points", self.map_callback, 10)
         self.odom_sub = self.create_subscription(Odometry, "odom", self.odom_callback, 10)
+
+        # Publish raw candidate, safe actionable slot, and debug information
         self.candidate_pub = self.create_publisher(Float32MultiArray, "parking/candidate", 10)
         self.actionable_pub = self.create_publisher(Float32MultiArray, "parking/actionable", 10)
         self.debug_pub = self.create_publisher(String, "parking/debug", 10)
@@ -45,18 +51,25 @@ class SlotDetectorNode(Node):
         self.robot_pose = (float(msg.pose.pose.position.x), float(msg.pose.pose.position.y), float(yaw))
 
     def map_callback(self, msg: Float32MultiArray) -> None:
+        # Update local copy of global boundary and empty-space points
         self.boundary, self.empty = unpack_map_points(msg)
         self.estimate_and_publish()
 
     def estimate_and_publish(self) -> None:
+        # Estimate parking rectangle from the current global map
         candidate = self.estimator.estimate(self.boundary, self.empty)
+
+        # If no rectangle is found, publish invalid candidate/actionable messages
         if candidate is None:
             self.candidate_pub.publish(pack_slot(None, actionable=False))
             self.actionable_pub.publish(pack_slot(None, actionable=False))
             self.publish_debug({"valid": False, "reason": "no_candidate", "boundary": len(self.boundary), "empty": len(self.empty)})
             return
 
+        # Publish the raw candidate even before checking whether it is safe to enter
         self.candidate_pub.publish(pack_slot(candidate, actionable=False))
+
+        # Prepare basic geometry diagnostics
         center, theta, sizes, area = rectangle_descriptor(candidate)
         debug = {
             "valid": True,
@@ -69,6 +82,7 @@ class SlotDetectorNode(Node):
             "empty": len(self.empty),
         }
 
+        # Safe-entry check needs robot position
         if self.robot_pose is None:
             self.actionable_pub.publish(pack_slot(None, actionable=False))
             debug["reason"] = "no_odom"
@@ -76,6 +90,8 @@ class SlotDetectorNode(Node):
             return
 
         robot_xy = np.array([self.robot_pose[0], self.robot_pose[1]], dtype=np.float64)
+
+        # Choose an entry edge that is not blocked by walls and has a safe route to pre-parking point
         ordered, edge_idx, entry_debug = choose_safe_entry_edge(
             candidate,
             self.boundary,
@@ -87,7 +103,10 @@ class SlotDetectorNode(Node):
             route_clearance=self.ENTRY_ROUTE_CLEARANCE,
             point_clearance=self.ENTRY_POINT_CLEARANCE,
         )
+
         debug["entry_debug"] = self._jsonify(entry_debug)
+
+        # Candidate exists, but none of its sides is currently safe to enter from
         if ordered is None:
             self.actionable_pub.publish(pack_slot(None, actionable=False))
             debug["reason"] = "no_safe_entry"
@@ -95,12 +114,15 @@ class SlotDetectorNode(Node):
             self.get_logger().info("[SLOT] Candidate detected, but no safe entry edge yet.")
             return
 
+        # Check that the ordered slot is large enough for parking
         fits, dims = ordered_slot_fits(
             ordered,
             min_width=self.MIN_SLOT_WIDTH,
             min_length=self.MIN_SLOT_LENGTH,
         )
+
         debug["ordered_dimensions"] = dims
+
         if not fits:
             self.actionable_pub.publish(pack_slot(None, actionable=False))
             debug["reason"] = "ordered_slot_too_small"
@@ -112,25 +134,34 @@ class SlotDetectorNode(Node):
             )
             return
 
+        # Extract selected pre-parking point returned by safe-entry logic
         selected = entry_debug.get("selected", {}) if isinstance(entry_debug, dict) else {}
         prepark = np.asarray(selected.get("prepark", [np.nan, np.nan]), dtype=np.float64)
+
+        # Use the ordered rectangle center for downstream parking logic
         center_ordered = np.mean(ordered, axis=0)
+
+        # Publish final actionable slot with entry edge and pre-parking point
         self.actionable_pub.publish(pack_slot(ordered, actionable=True, entry_edge=edge_idx, prepark=prepark, center=center_ordered))
+
         debug["actionable"] = True
         debug["entry_edge"] = int(edge_idx)
         debug["prepark"] = prepark.tolist()
         self.publish_debug(debug)
+
         self.get_logger().info(
             f"[SLOT] Actionable slot: entry_edge={edge_idx}, p=({prepark[0]:.3f},{prepark[1]:.3f}), "
             f"boundary={len(self.boundary)}, empty={len(self.empty)}"
         )
 
     def publish_debug(self, payload: dict) -> None:
+        # Publish debug dictionary as JSON string
         msg = String()
         msg.data = json.dumps(self._jsonify(payload))
         self.debug_pub.publish(msg)
 
     def _jsonify(self, obj):
+        # Convert NumPy objects to plain Python objects before JSON serialization
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         if isinstance(obj, (np.floating, np.integer)):

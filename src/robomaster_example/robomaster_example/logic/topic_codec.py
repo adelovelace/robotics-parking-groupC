@@ -14,41 +14,81 @@ def _as_points(points: np.ndarray) -> np.ndarray:
 
 
 def pack_map_points(boundary_pts: np.ndarray, empty_pts: np.ndarray) -> Float32MultiArray:
+    """
+    Pack map boundary and empty points as [n_boundary, 2 boundary flatten points, n_empty, 2 empty flatten points].
+    :param boundary_pts: a discrete list of an obstacle's boundary points
+    :param empty_pts: a discrete list of empty space points
+    :return: Float32MultiArray with encoded data
+    """
     boundary = _as_points(boundary_pts)
     empty = _as_points(empty_pts)
+
     data = [float(len(boundary))]
     data.extend(boundary.reshape(-1).astype(float).tolist())
+
     data.append(float(len(empty)))
     data.extend(empty.reshape(-1).astype(float).tolist())
+
     msg = Float32MultiArray()
     msg.data = data
+
     return msg
 
 
 def unpack_map_points(msg: Float32MultiArray) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Unpack the message data from
+    `[n_boundary, 2 boundary flatten points, n_empty, 2 empty flatten points]`
+    format to
+    tuple[np.ndarray, np.ndarray]
+    :param msg: the message to unpack
+    :return: tuple[np.ndarray, np.ndarray] - two arrays of boundary and empty points of shape
+                                             (n_boundary, 2) and (n_empty, 2)
+    """
     data = list(msg.data)
     if not data:
         return np.empty((0, 2), dtype=np.float64), np.empty((0, 2), dtype=np.float64)
     idx = 0
-    n_boundary = int(round(data[idx])); idx += 1
-    boundary_flat = data[idx:idx + 2 * n_boundary]; idx += 2 * n_boundary
+    n_boundary = int(round(data[idx]))
+    idx += 1
+
+    boundary_flat = data[idx:idx + 2 * n_boundary]
+    idx += 2 * n_boundary
+
     boundary = np.asarray(boundary_flat, dtype=np.float64).reshape(-1, 2)
-    n_empty = int(round(data[idx])) if idx < len(data) else 0; idx += 1
+    n_empty = int(round(data[idx])) if idx < len(data) else 0
+    idx += 1
+
     empty_flat = data[idx:idx + 2 * n_empty]
     empty = np.asarray(empty_flat, dtype=np.float64).reshape(-1, 2)
+
     return boundary, empty
 
 
 def pack_observation(robot_pose: tuple[float, float, float], boundary_pts: np.ndarray, empty_pts: np.ndarray) -> Float32MultiArray:
+    """
+    Pack observation data including robot pose, boundary points, and empty points into a `Float32MultiArray`.
+    Packing scheme: [x, y, theta, n_boundary, boundary_points, n_empty, empty_points]
+
+    :param robot_pose: Tuple containing the robot's x, y coordinates and orientation (theta).
+    :param boundary_pts: A NumPy array representing the boundary points in the environment.
+    :param empty_pts: A NumPy array representing the empty points in the environment.
+    :return: A `Float32MultiArray` object containing the packed observation data.
+    """
     boundary = _as_points(boundary_pts)
     empty = _as_points(empty_pts)
+
     x, y, theta = robot_pose
     data = [float(x), float(y), float(theta), float(len(boundary))]
+
     data.extend(boundary.reshape(-1).astype(float).tolist())
+
     data.append(float(len(empty)))
     data.extend(empty.reshape(-1).astype(float).tolist())
+
     msg = Float32MultiArray()
     msg.data = data
+
     return msg
 
 
@@ -75,7 +115,16 @@ def pack_slot(
     prepark: np.ndarray | None = None,
     center: np.ndarray | None = None,
 ) -> Float32MultiArray:
-    """Pack slot as [valid, actionable, entry_edge, p_x, p_y, c_x, c_y, 8 corners]."""
+    """
+    Pack slot as [valid, actionable, entry_edge, p_x, p_y, c_x, c_y, 8 corners].
+
+    :param corners: array of shape (4, 2) defining the parking rectangle
+    :param actionable: flag if we should proceed with the parking in this slop
+    :param entry_edge: the edge of the rectangle that was used to enter the slot
+    :param prepark: the point where the robot should be parked before entering the slot, `p` in the report
+    :param center: the center point of the parking rectangle
+    :return: encoded Float32MultiArray message
+    """
     msg = Float32MultiArray()
     if corners is None:
         msg.data = [0.0, 0.0, -1.0, np.nan, np.nan, np.nan, np.nan]
@@ -92,6 +141,19 @@ def pack_slot(
 
 
 def unpack_slot(msg: Float32MultiArray) -> dict:
+    """
+    Unpack the message data from Float32MultiArray.
+    Follows the same format as `pack_slot`.
+
+    :param msg: message to unpack
+    :return: dictionary with unpacked data
+                    - valid: bool
+                    - actionable: bool
+                    - entry_edge: int
+                    - prepark: np.ndarray, (2,)
+                    - center: np.ndarray,  (2,)
+                    - corners: np.ndarray, (4, 2)
+    """
     data = list(msg.data)
     if len(data) < 7 or data[0] < 0.5:
         return {"valid": False, "actionable": False, "entry_edge": -1, "corners": None}

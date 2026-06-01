@@ -23,25 +23,26 @@ class MissionControllerNode(Node):
     longer performs vision, map fusion, or parking-rectangle estimation.
     """
 
-    DESIRED_CLEARANCE = 0.45
-    MIN_CLEARANCE = 0.28
-    ARC_STEP = 0.35
-    ARC_LINEAR_SPEED = 0.08
-    ARC_MAX_ANGULAR_SPEED = 0.35
-    ARC_CLEARANCE_GAIN = 1.2
-    ARC_ANGLE_TOLERANCE = np.deg2rad(12.0)
-    ARC_DIRECTION = 1
+    DESIRED_CLEARANCE = 0.45  # Desired safe distance from robot to the boundary
+    MIN_CLEARANCE = 0.28  # The minimum distance between the robot and the boundary to move away from it
+    ARC_STEP = 0.35  # The distance the the acr between the SEE points
+    ARC_LINEAR_SPEED = 0.08  # The speed along the arc
+    ARC_MAX_ANGULAR_SPEED = 0.35  # Maximum rotation speed of the robot while aligning to the arc
+    ARC_CLEARANCE_GAIN = 1.2  # The proportional coefficient for the clearance P-controller
+    ARC_CLEARANCE_OFFSET = 0.05
+    ARC_ANGLE_TOLERANCE = np.deg2rad(12.0)  # The tolerance in rotating to the desired direction to go in the arc
+    ARC_DIRECTION = 1  # Define the direction of the arc: 1 = clockwise, -1 = counterclockwise
     SCAN_ANGLE = np.deg2rad(35.0)
 
-    SEE_SCAN_ANGLE = np.deg2rad(18.0)
-    SEE_ALIGN_TOL = np.deg2rad(7.0)
+    SEE_SCAN_ANGLE = np.deg2rad(18.0)  # The angle between the center and the left/right snapshots in SEE
+    SEE_ALIGN_TOL = np.deg2rad(7.0)  # The alignment threshold for the SEE step
     SEE_MAX_ANGULAR_SPEED = 0.30
-    SEE_FULL_SCAN_EVERY = 3
-    SEE_SPARSE_BOUNDARY_POINTS = 40
+    SEE_FULL_SCAN_EVERY = 3  # How ofter we do 3-side observation
+    SEE_SPARSE_BOUNDARY_POINTS = 40  # The number of boundary points to consider map sparce
 
-    VALIDATION_D_BACK = 0.50
-    VALIDATION_SIDE_OFFSET = 0.12
-    VALIDATION_POSE_TOL = 0.05
+    VALIDATION_D_BACK = 0.50  # Defines the distance from the parking slot center to the observation validation point
+    VALIDATION_SIDE_OFFSET = 0.12  # The distance between the p and side obervation points
+    VALIDATION_POSE_TOL = 0.05  # The tolerance thresholds for validation moving controller
     VALIDATION_ANGLE_TOL = np.deg2rad(7.0)
     VALIDATION_MAX_LINEAR = 0.16
     VALIDATION_MAX_LATERAL = 0.12
@@ -56,13 +57,13 @@ class MissionControllerNode(Node):
         self.robot_pose = None
         self.boundary = np.empty((0, 2), dtype=np.float64)
         self.empty = np.empty((0, 2), dtype=np.float64)
-        self.latest_candidate = None
+        self.latest_candidate = None  # last candidate rectangle from validation step
         self.latest_actionable = None
         self.waiting_observation: str | None = None
 
         self.see_step = "ALIGN"
         self.see_center_theta = None
-        self.see_use_side_views = True
+        self.see_use_side_views = True  # defines the SEE mode: 3-view or center-only
         self.go_around_iterations = 0
 
         self.arc_mode = None
@@ -76,7 +77,7 @@ class MissionControllerNode(Node):
         self.validation_rectangles: list[np.ndarray | None] = []
         self.pending_validation_next_step = None
         self.pending_validation_label = None
-        self.pending_validation_store_time = None
+        self.pending_validation_store_time = None  # Keep the synchronization delay
         self.candidate_seq = 0
         self.actionable_seq = 0
         self.validation_capture_candidate_seq = -1
@@ -98,10 +99,10 @@ class MissionControllerNode(Node):
         self.state_pub = self.create_publisher(String, "mission/state", 10)
 
         qos = QoSProfile(
-            reliability=ReliabilityPolicy.RELIABLE,
-            durability=DurabilityPolicy.TRANSIENT_LOCAL,
-            history=HistoryPolicy.KEEP_LAST,
-            depth=1,
+            reliability=ReliabilityPolicy.RELIABLE,  # guarantee message delivery
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,  # keeps the last message available for late subscribers
+            history=HistoryPolicy.KEEP_LAST,  # keep only last messages, not full history
+            depth=1,  # keep only one message at a time
         )
         self.parking_target_pub = self.create_publisher(Float32MultiArray, "parking_target", qos)
 
@@ -119,7 +120,7 @@ class MissionControllerNode(Node):
         self.robot_pose = (float(msg.pose.pose.position.x), float(msg.pose.pose.position.y), float(yaw))
 
     def map_callback(self, msg: Float32MultiArray) -> None:
-        self.boundary, self.empty = unpack_map_points(msg)
+        self.boundary, self.empty = unpack_map_points(msg)  # update the local map
 
     def candidate_callback(self, msg: Float32MultiArray) -> None:
         parsed = unpack_slot(msg)
@@ -132,10 +133,18 @@ class MissionControllerNode(Node):
         self.actionable_seq += 1
 
     def observation_done_callback(self, msg: String) -> None:
+        """
+        Called after the SEE step has finished.
+
+
+        :param msg:
+        :return:
+        """
         if self.waiting_observation == msg.data:
             self.get_logger().info(f"[MISSION] Observation finished: {msg.data}")
             self.waiting_observation = None
             if self.state == "VALIDATE_SLOT" and self.validation_step == "WAIT_VALIDATION_RECT":
+                # Add delay to remove odom/camera missunchromization artifacts
                 self.pending_validation_store_time = time.monotonic() + self.VALIDATION_RECT_DELAY_S
                 self.pending_validation_label = msg.data
                 self.get_logger().info(
@@ -147,21 +156,40 @@ class MissionControllerNode(Node):
         if self.state != state:
             self.get_logger().info(f"[STATE] {self.state} -> {state}" + (f" | {reason}" if reason else ""))
         self.state = state
-        msg = String(); msg.data = state; self.state_pub.publish(msg)
+
+        msg = String()
+        msg.data = state
+        self.state_pub.publish(msg)
 
     def publish_stop(self) -> None:
+        """Empty publisher when we pass the publishing right to the parking node"""
         self.cmd_pub.publish(Twist())
 
     def request_observation(self, name: str) -> None:
+        """
+        Requests an observation from some point during the SEE or VALIDATE_SLOT step
+
+        :param name: the relative name of observation point (center, left, right)
+        :return: None
+        """
         if self.waiting_observation is not None:
             return
-        msg = String(); msg.data = name
+
+        msg = String()
+        msg.data = name
+
         self.obs_request_pub.publish(msg)
         self.waiting_observation = name
         self.get_logger().info(f"[MISSION] Requested observation: {name}")
 
     def request_validation_observation(self, name: str, next_step: str) -> None:
-        """Request a validation capture and later store the slot estimate after topic propagation."""
+        """
+        Request a validation capture and later store the slot estimate after topic propagation.
+
+        :param name: the relative name of validation point (center, left, right)
+        :param next_step: the name of the next state to transition to after the validation is done
+        :return: None
+        """
         if self.waiting_observation is not None:
             return
         self.validation_capture_candidate_seq = self.candidate_seq
@@ -173,9 +201,19 @@ class MissionControllerNode(Node):
         self.validation_step = "WAIT_VALIDATION_RECT"
 
     def store_validation_rectangle_if_ready(self) -> bool:
+        """
+        Save localy the last global-map rectangle received from the validation point
+        Move to the next validation step if the slot is available
+
+        :return: flag if validation step was done
+        """
+
+        # We need to wait for the validation point to finish and the slot to be available
         if self.waiting_observation is not None:
             self.publish_stop()
             return False
+
+        # Check if we need to wait before map updates
         if self.pending_validation_store_time is None:
             self.publish_stop()
             return False
@@ -184,7 +222,7 @@ class MissionControllerNode(Node):
             return False
 
         rect = None if self.latest_candidate is None else self.latest_candidate.copy()
-        self.validation_rectangles.append(rect)
+        self.validation_rectangles.append(rect)  # Update candidate rectangle list
         self.get_logger().info(
             f"[VALIDATION] Stored delayed global-map rectangle after {self.pending_validation_label}: "
             f"valid={rect is not None}, count={len(self.validation_rectangles)}/3, "
@@ -200,6 +238,15 @@ class MissionControllerNode(Node):
         return True
 
     def reset_see_cycle(self) -> None:
+        """
+        Resets the SEE cycle
+        In each SEE big step the robot can do the following:
+            aligns to the boundary and take 3 snapshots: center, to the left, and to the right
+
+        Here we move back to the "ALIGN" substep of SEE, remove target theta
+            + decide the next SEE step type ("3-view" or "center-only")
+        :return: None
+        """
         self.see_step = "ALIGN"
         self.see_center_theta = None
         self.see_use_side_views = len(self.boundary) < self.SEE_SPARSE_BOUNDARY_POINTS or self.go_around_iterations % self.SEE_FULL_SCAN_EVERY == 0
@@ -213,9 +260,12 @@ class MissionControllerNode(Node):
             if not self.cmd_vel_released_to_park4:
                 self.publish_stop()
             return
+        # Do nothing until we get first odometry
         if self.robot_pose is None:
             self.publish_stop()
             return
+
+        # Main state machine
         if self.state == "SEE":
             self.update_see()
         elif self.state == "ACT_ARC":
@@ -230,6 +280,10 @@ class MissionControllerNode(Node):
             self.publish_stop()
 
     def nearest_boundary_theta(self) -> float | None:
+        """
+        Calculate the angle of the nearest point on the boundary to the robot
+        :return: the angle of the nearest point on the boundary to the robot, or None if the boundary is empty
+        """
         if len(self.boundary) == 0:
             return None
         x, y, _ = self.robot_pose
@@ -239,6 +293,7 @@ class MissionControllerNode(Node):
         return float(np.arctan2(nearest[1] - y, nearest[0] - x))
 
     def update_see(self) -> None:
+        # Check if we wait answer from vision node
         if self.waiting_observation is not None:
             self.publish_stop()
             return
@@ -246,33 +301,46 @@ class MissionControllerNode(Node):
         cmd = Twist()
         if self.see_step == "ALIGN":
             desired = self.nearest_boundary_theta()
+            # If this is the first frame just capture what's in front of the robot
             if desired is None:
                 self.see_center_theta = theta
                 self.see_step = "CAPTURE_CENTER"
                 return
+
+            # Otherwise simple P-controller to rotate to boundary direction
             err = normalize_angle(desired - theta)
             if abs(err) > self.SEE_ALIGN_TOL:
                 cmd.angular.z = float(np.clip(1.2 * err, -self.SEE_MAX_ANGULAR_SPEED, self.SEE_MAX_ANGULAR_SPEED))
                 self.cmd_pub.publish(cmd)
                 return
+
+            # If we are close enough to the boundary, we can start the SEE cycle
             self.publish_stop()
             self.see_center_theta = theta
             self.see_step = "CAPTURE_CENTER"
             return
+        # Take the center snapshot
         if self.see_step == "CAPTURE_CENTER":
             self.request_observation("see_center")
             self.see_step = "AFTER_CENTER"
             return
+
         if self.see_step == "AFTER_CENTER":
+            # If we have a valid actionable slot, we can start the validation step
             if self.latest_actionable is not None:
                 if self.setup_validation(self.latest_actionable["corners"]):
                     self.set_state("VALIDATE_SLOT", "actionable slot after SEE")
                     return
+
+            # Check if we need to switch to the next SEE step type
             if self.see_use_side_views:
                 self.see_step = "ROTATE_LEFT"
+            # or we should continue go around the boundary
             else:
                 self.start_arc()
             return
+
+        # Substate machine for the side-view SEE cycle
         if self.see_step == "ROTATE_LEFT":
             target = normalize_angle(self.see_center_theta + self.SEE_SCAN_ANGLE)
             if self.rotate_to_theta(target, "SEE left"):
@@ -282,12 +350,16 @@ class MissionControllerNode(Node):
             self.request_observation("see_left")
             self.see_step = "AFTER_LEFT"
             return
+
         if self.see_step == "AFTER_LEFT":
+            # Check once more if we have a valid actionable slot after the left SEE cycle
             if self.latest_actionable is not None and self.setup_validation(self.latest_actionable["corners"]):
                 self.set_state("VALIDATE_SLOT", "actionable slot after left SEE")
                 return
             self.see_step = "ROTATE_RIGHT"
             return
+
+        # Continue the side-view SEE cycle
         if self.see_step == "ROTATE_RIGHT":
             target = normalize_angle(self.see_center_theta - self.SEE_SCAN_ANGLE)
             if self.rotate_to_theta(target, "SEE right"):
@@ -304,6 +376,12 @@ class MissionControllerNode(Node):
             self.start_arc()
 
     def rotate_to_theta(self, target_theta: float, label: str) -> bool:
+        """
+        Simple P-controller to rotate to the target theta
+        :param target_theta: The target theta to rotate to
+        :param label: Debug label
+        :return: flag if the rotation is done
+        """
         _, _, theta = self.robot_pose
         err = normalize_angle(target_theta - theta)
         if abs(err) <= self.SEE_ALIGN_TOL:
@@ -315,6 +393,12 @@ class MissionControllerNode(Node):
         return False
 
     def start_arc(self) -> None:
+        """
+        Setup the starting parameters for the arc action
+            - staring point
+            - mode: SCAN or BOUNDARY. SCAN is for early stages when the boundary is not yet known well
+        :return:
+        """
         x, y, theta = self.robot_pose
         self.arc_start_xy = np.array([x, y], dtype=np.float64)
         self.arc_start_theta = theta
@@ -332,28 +416,52 @@ class MissionControllerNode(Node):
         robot_xy = np.array([x, y], dtype=np.float64)
         cmd = Twist()
         if self.arc_mode == "SCAN":
+            # Simple P-controller to rotate to the scan target theta
             err = normalize_angle(self.scan_target_theta - theta)
             if abs(err) <= self.VALIDATION_ANGLE_TOL:
-                self.publish_stop(); return True
-            cmd.angular.z = float(np.clip(1.2 * err, -0.30, 0.30)); self.cmd_pub.publish(cmd); return False
+                self.publish_stop()
+                return True # Flag that the acr is done
+
+            cmd.angular.z = float(np.clip(1.2 * err, -0.30, 0.30))
+            self.cmd_pub.publish(cmd)
+            return False
+
+        # Another check if the arc is done
         if self.arc_start_xy is None or len(self.frozen_boundary) == 0:
-            self.publish_stop(); return True
+            self.publish_stop()
+            return True
+
+        # Check if we've traveled enough, we can start the SEE cycle
         travelled = float(np.linalg.norm(robot_xy - self.arc_start_xy))
         if travelled >= self.ARC_STEP:
-            self.publish_stop(); return True
+            self.publish_stop()
+            return True
+
         dists = np.linalg.norm(self.frozen_boundary - robot_xy.reshape(1, 2), axis=1)
-        idx = int(np.argmin(dists)); nearest = self.frozen_boundary[idx]; clearance = float(dists[idx])
+        idx = int(np.argmin(dists))
+        nearest = self.frozen_boundary[idx]
+        clearance = float(dists[idx])
         radial = robot_xy - nearest
-        rn = np.linalg.norm(radial)
-        if rn < 1e-9:
-            self.publish_stop(); return True
-        radial = radial / rn
+
+        # check if we hit the boundary
+        if clearance < 1e-9:
+            self.publish_stop()
+            return True
+
+        # normalize the radial vector from boundary to robot
+        radial = radial / clearance
         if clearance < self.MIN_CLEARANCE:
+            # If we are close enough to the boundary, we should go away from it
             desired_dir = radial
         else:
-            tangent = np.array([-radial[1], radial[0]], dtype=np.float64) if self.ARC_DIRECTION > 0 else np.array([radial[1], -radial[0]], dtype=np.float64)
+            # otherwise we should move tangent to the boundary
+            tangent = self.ARC_DIRECTION * np.array([-radial[1], radial[0]], dtype=np.float64)
+            # Additional component to keep robot near the arc neither going too far from it nor too close to it
+            # Can be seen as a proportional controller to the clearance error
             desired_dir = tangent + self.ARC_CLEARANCE_GAIN * (self.DESIRED_CLEARANCE - clearance) * radial
+            # normalize to unit vector
             desired_dir = desired_dir / max(np.linalg.norm(desired_dir), 1e-9)
+
         desired_theta = float(np.arctan2(desired_dir[1], desired_dir[0]))
         err = normalize_angle(desired_theta - theta)
         cmd.linear.x = 0.0 if abs(err) > self.ARC_ANGLE_TOLERANCE else self.ARC_LINEAR_SPEED
@@ -366,22 +474,33 @@ class MissionControllerNode(Node):
         return False
 
     def setup_validation(self, ordered_slot: np.ndarray) -> bool:
+        """
+        Prepares a parking-slot validation sequence: it computes
+            - a pose behind the slot,
+            - facing the slot center,
+            - plus left/right offset poses for extra validation snapshots.
+        :param ordered_slot: the detected parking slot defined by its corners (4, 2)
+        :return:
+        """
         pts = np.asarray(ordered_slot, dtype=np.float64).reshape(4, 2)
+        # Unpack the corners
         top_l, top_r, bottom_l, bottom_r = pts
-        c = (top_l + top_r + bottom_l + bottom_r) / 4.0
-        m = (bottom_l + bottom_r) / 2.0
-        e = bottom_r - bottom_l
-        n = np.array([-e[1], e[0]], dtype=np.float64)
+        c = (top_l + top_r + bottom_l + bottom_r) / 4.0  # Find a center
+        m = (bottom_l + bottom_r) / 2.0  # Find a middle of the botton edge
+        e = bottom_r - bottom_l  # Find a direction vector of an edge
+        n = np.array([-e[1], e[0]], dtype=np.float64)  # Compute a normal vector to it
         n_norm = np.linalg.norm(n)
         if n_norm < 1e-9:
             return False
-        n = n / n_norm
+        n = n / n_norm  # make it unit vector
+        # Make the normal vector point away from the center
         if np.dot(n, c - m) > 0:
             n = -n
+        # Define the `p` point from which we will make observation
         p = m + n * self.VALIDATION_D_BACK
-        theta = float(np.arctan2(c[1] - p[1], c[0] - p[0]))
-        left = np.array([-np.sin(theta), np.cos(theta)], dtype=np.float64)
-        right = -left
+        theta = float(np.arctan2(c[1] - p[1], c[0] - p[0]))  # the heading angle from validation point p toward slot center
+        left = np.array([-np.sin(theta), np.cos(theta)], dtype=np.float64) # define the direction to the left of p
+        right = -left  # define the direction to the right of p
         self.validation_slot = pts.copy()
         self.validation_rectangles = []
         self.pending_validation_next_step = None
@@ -399,6 +518,10 @@ class MissionControllerNode(Node):
         return True
 
     def update_validation(self) -> None:
+        """
+        Encapsulates the validation update logic.
+        :return:
+        """
         if self.validation_step == "WAIT_VALIDATION_RECT":
             self.store_validation_rectangle_if_ready()
             return
@@ -431,6 +554,12 @@ class MissionControllerNode(Node):
             return
 
     def drive_to_pose(self, target_pose: tuple[float, float, float], label: str) -> bool:
+        """
+        Simple P-controller that moves a robot to the desired position
+        :param target_pose:
+        :param label:
+        :return:
+        """
         tx, ty, target_theta = target_pose
         x, y, theta = self.robot_pose
         dx, dy = tx - x, ty - y
@@ -452,9 +581,12 @@ class MissionControllerNode(Node):
 
     def finish_validation(self) -> None:
         stable_rect, pair = self.select_stable_validation_rectangle()
+        # We don't have a satble parkingslot after the validation
         if stable_rect is None:
             self.get_logger().warn("[VALIDATION] Rejected: no 2-of-3 stable global rectangles.")
-            self.reset_see_cycle(); self.start_arc(); return
+            self.reset_see_cycle()
+            self.start_arc()
+            return
         # Prefer the current safe-entry slot if available and consistent. If the actionable
         # topic is temporarily invalid because of asynchronous map/slot propagation, fall
         # back to the originally selected ordered validation slot. That slot already passed
@@ -491,20 +623,27 @@ class MissionControllerNode(Node):
         )
 
     def select_stable_validation_rectangle(self) -> tuple[np.ndarray | None, tuple[int, int] | None]:
+        """
+        Check if validation condition is satisfied: 2-of-3 validation rectangles should be approximately the same
+        :return:
+        """
         valid = [(i, r) for i, r in enumerate(self.validation_rectangles) if r is not None]
         if len(valid) < 2:
             return None, None
-        best_pair = None; best_rect = None
+        best_pair = None
+        best_rect = None
         for i in range(len(valid)):
             for j in range(i + 1, len(valid)):
-                idx_a, a = valid[i]; idx_b, b = valid[j]
+                idx_a, a = valid[i]
+                idx_b, b = valid[j]
                 same, dbg = is_same_slot(b, a)
                 self.get_logger().info(
                     f"[VALIDATION] pair {idx_a}-{idx_b}: same={same}, center={dbg['center_dist']:.2f}, "
                     f"size={dbg['size_diff']:.2f}, corner={dbg['corner_dist']:.2f}, theta_diag={np.rad2deg(dbg['theta_diff']):.1f}"
                 )
                 if same and (best_pair is None or idx_b > best_pair[1]):
-                    best_pair = (idx_a, idx_b); best_rect = b.copy()
+                    best_pair = (idx_a, idx_b)
+                    best_rect = b.copy()
         return best_rect, best_pair
 
     def update_delegate(self) -> None:

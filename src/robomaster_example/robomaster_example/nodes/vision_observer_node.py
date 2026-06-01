@@ -24,14 +24,14 @@ SYNC_SLOP_S = 0.1
 class VisionObserverNode(Node):
     """Produce one static world-frame boundary observation on request."""
 
+    # Variable to define what we think the robot is stable at
     ODOM_LINEAR_STABLE = 0.02
     ODOM_ANGULAR_STABLE = 0.03
-    CAPTURE_SETTLE_S = 0.75
+    CAPTURE_SETTLE_S = 0.75 # How much to wait until we start capturing
 
     def __init__(self):
         super().__init__("vision_observer_node")
         self.bridge = CvBridge()
-        self.camera_info = None
         self.camera_offset_x = 0.02548
         self.camera_offset_y = -0.00047
         self.T = FloorProjectiveTransform.from_points()
@@ -41,10 +41,12 @@ class VisionObserverNode(Node):
         self.latest_linear_speed = 0.0
         self.latest_angular_speed = 0.0
 
+        # Publisher to publish the boundary observation (boundary and empty points)
         self.observation_pub = self.create_publisher(Float32MultiArray, "vision/boundary_observation", 10)
+        # Publisher to flag the end of an observation
         self.done_pub = self.create_publisher(String, "vision/observation_done", 10)
+        # Subscriber to get a request for a new observation
         self.request_sub = self.create_subscription(String, "mission/observation_request", self.request_callback, 10)
-        self.camera_info_sub = self.create_subscription(CameraInfo, "camera/camera_info", self.camera_info_callback, 10)
 
         image_sub = message_filters.Subscriber(self, Image, "camera/image_color")
         odom_sub = message_filters.Subscriber(self, Odometry, "odom")
@@ -56,9 +58,6 @@ class VisionObserverNode(Node):
         self.capture_ready_time = None
         self.get_logger().info(f"[VISION] Observation requested: {self.pending_request}")
 
-    def camera_info_callback(self, msg: CameraInfo) -> None:
-        self.camera_info = msg
-
     def robot_is_stable(self) -> bool:
         return abs(self.latest_linear_speed) <= self.ODOM_LINEAR_STABLE and abs(self.latest_angular_speed) <= self.ODOM_ANGULAR_STABLE
 
@@ -68,6 +67,17 @@ class VisionObserverNode(Node):
         return float(pose3.position.x), float(pose3.position.y), float(yaw)
 
     def get_camera_pose_matrix(self, x: float, y: float, theta: float) -> np.ndarray:
+        """
+        Calculates the camera pose matrix, combining the transformations from the world to the base
+        and the base to the camera. The result represents the transformation from the world frame
+        to the camera frame.
+
+        :param x: X-coordinate of the robot's base in the world frame.
+        :param y: Y-coordinate of the robot's base in the world frame.
+        :param theta: Orientation (in radians) of the robot's base relative to the world frame.
+        :return: A 3x3 homogeneous transformation matrix representing the camera pose in the world frame.
+        :rtype: numpy.ndarray
+        """
         c, s = np.cos(theta), np.sin(theta)
         world_T_base = np.array([[c, -s, x], [s, c, y], [0, 0, 1]], dtype=np.float64)
         base_T_camera = np.array([[1, 0, self.camera_offset_x], [0, 1, self.camera_offset_y], [0, 0, 1]], dtype=np.float64)
@@ -76,8 +86,12 @@ class VisionObserverNode(Node):
     def synced_callback(self, image_msg: Image, odom_msg: Odometry) -> None:
         self.latest_linear_speed = float(odom_msg.twist.twist.linear.x)
         self.latest_angular_speed = float(odom_msg.twist.twist.angular.z)
+
+        # Do nothing if there is no request
         if self.pending_request is None:
             return
+
+        # Wait until robot stabilizes
         if not self.robot_is_stable():
             self.get_logger().info(
                 f"[VISION] Waiting for stable odom before {self.pending_request}: "
@@ -85,6 +99,8 @@ class VisionObserverNode(Node):
                 throttle_duration_sec=0.5,
             )
             return
+
+        # Wait until we are ready to capture
         if self.capture_ready_time is None:
             self.capture_ready_time = time.monotonic() + self.CAPTURE_SETTLE_S
             self.get_logger().info(f"[VISION] Settling for {self.CAPTURE_SETTLE_S:.2f}s before {self.pending_request}")
