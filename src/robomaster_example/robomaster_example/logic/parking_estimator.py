@@ -17,7 +17,7 @@ class ParkingEstimator:
     empty-space cluster, and returns its minimum rotated rectangle.
     """
 
-    def __init__(self, safety_margin: float = 0.1, min_area: float = 0.1025):
+    def __init__(self, safety_margin: float = 0.05, min_area: float = 0.1025):
         self.safety_margin = float(safety_margin)
         self.min_area = float(min_area)
 

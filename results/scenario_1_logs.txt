@@ -1,0 +1,338 @@
+                              
+(robotics-lab-usi-robomaster) (base) jimenatagle@arm64-apple-darwin20 robotics-parking-groupC % ros2 launch robomaster_example refactored_mission.launch
+[INFO] [launch]: All log files can be found below /Users/jimenatagle/.ros/log/2026-06-01-01-57-38-365308-Mac.galaxus.box-44934
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robomaster_driver-1]: process started with pid [44935]
+[INFO] [robot_state_publisher-2]: process started with pid [44936]
+[INFO] [joint_state_publisher-3]: process started with pid [44937]
+[INFO] [vision_observer_node-4]: process started with pid [44938]
+[INFO] [map_node-5]: process started with pid [44939]
+[INFO] [slot_detector_node-6]: process started with pid [44940]
+[INFO] [mission_controller_node-7]: process started with pid [44941]
+[INFO] [controller_park4-8]: process started with pid [44942]
+[INFO] [visualization_node-9]: process started with pid [44943]
+[mission_controller_node-7] [INFO] [1780271859.266532886] [rm0.mission_controller_node]: [SEE] New cycle: mode=3-view, boundary=0, iter=0
+[robomaster_driver-1] [INFO] [1780271859.783682379] [rm0.robomaster]: Waiting for a robot
+[robomaster_driver-1] [INFO] [1780271860.186785693] [rm0.robomaster]: Found a robot
+[robomaster_driver-1] [INFO] [1780271860.187133149] [rm0.robomaster]: Try to connect via sta to robot with sn None
+[robomaster_driver-1] [INFO] [1780271861.251669778] [rm0.robomaster]: Connected
+[robomaster_driver-1] [INFO] [1780271861.298934999] [rm0.robomaster]: [Arm] left servo: index 0, direction 1, value 1024, angle 0.073304
+[robomaster_driver-1] [INFO] [1780271861.299243373] [rm0.robomaster]: [Arm] right servo: index 1, direction -1, value 1024, angle -0.274016
+[robomaster_driver-1] [WARN] [1780271861.452998519] [rm0.robomaster]: [Camera] FFmpeg not available: install PyAV and ffmpeg_image_transport_msgs
+[robomaster_driver-1] [INFO] [1780271861.467376281] [rm0.robomaster]: [Chassis] Topic cmd_vel will control chassis twist
+[controller_park4-8] [INFO] [1780271861.562341596] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=0.00
+[mission_controller_node-7] [INFO] [1780271861.571179469] [rm0.mission_controller_node]: [MISSION] Requested observation: see_center
+[vision_observer_node-4] [INFO] [1780271861.641068994] [rm0.vision_observer_node]: [VISION] Observation requested: see_center
+[controller_park4-8] [INFO] [1780271862.288588543] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=0.00
+[robomaster_driver-1] [INFO] [1780271862.411384720] [rm0.robomaster]: Enabled modules: Arm, Battery, Camera, Chassis, Gripper, LED, Speaker, ToF
+[robomaster_driver-1] [INFO] [1780271862.591648483] [rm0.robomaster]: [Camera] Started video stream with resolution 360p
+[controller_park4-8] [INFO] [1780271862.796312917] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=0.00
+[vision_observer_node-4] [INFO] [1780271862.796678415] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before see_center
+[controller_park4-8] [INFO] [1780271863.314976820] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=0.00
+[vision_observer_node-4] [INFO] [1780271863.643623757] [rm0.vision_observer_node]: [VISION] Captured see_center: boundary=296, empty=2909, pose=(0.00,-0.00,0.00)
+[mission_controller_node-7] [INFO] [1780271863.643829922] [rm0.mission_controller_node]: [MISSION] Observation finished: see_center
+[map_node-5] [INFO] [1780271863.665994978] [rm0.map_node]: [MAP] Updated from observation: boundary=80, empty=1041
+[mission_controller_node-7] [INFO] [1780271863.668420591] [rm0.mission_controller_node]: [SEE left] rotate err=18.0deg
+[slot_detector_node-6] [INFO] [1780271863.742321429] [rm0.slot_detector_node]: [SLOT] Candidate detected, but ordered slot is too small: bottom_width=0.540, top_width=0.540, left_length=0.320, right_length=0.320
+[controller_park4-8] [INFO] [1780271863.928774578] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=0.06
+[mission_controller_node-7] [INFO] [1780271864.169146333] [rm0.mission_controller_node]: [SEE left] rotate err=11.3deg
+[controller_park4-8] [INFO] [1780271864.501371962] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=0.20
+[mission_controller_node-7] [INFO] [1780271864.534731336] [rm0.mission_controller_node]: [MISSION] Requested observation: see_left
+[vision_observer_node-4] [INFO] [1780271864.534908960] [rm0.vision_observer_node]: [VISION] Observation requested: see_left
+[vision_observer_node-4] [INFO] [1780271864.650750880] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before see_left
+[controller_park4-8] [INFO] [1780271865.097289393] [rm0.controller_park4]: odometry: pose x=0.00, y=0.00, theta=0.21
+[vision_observer_node-4] [INFO] [1780271865.434096415] [rm0.vision_observer_node]: [VISION] Captured see_left: boundary=317, empty=2952, pose=(0.00,0.00,0.21)
+[mission_controller_node-7] [INFO] [1780271865.434255831] [rm0.mission_controller_node]: [MISSION] Observation finished: see_left
+[map_node-5] [INFO] [1780271865.436658486] [rm0.map_node]: [MAP] Updated from observation: boundary=121, empty=1259
+[slot_detector_node-6] [INFO] [1780271865.447117642] [rm0.slot_detector_node]: [SLOT] Candidate detected, but ordered slot is too small: bottom_width=0.520, top_width=0.520, left_length=0.360, right_length=0.360
+[mission_controller_node-7] [INFO] [1780271865.451689702] [rm0.mission_controller_node]: [SEE right] rotate err=-30.2deg
+[controller_park4-8] [INFO] [1780271865.635098242] [rm0.controller_park4]: odometry: pose x=0.00, y=0.00, theta=0.18
+[mission_controller_node-7] [INFO] [1780271865.970434854] [rm0.mission_controller_node]: [SEE right] rotate err=-23.4deg
+[controller_park4-8] [INFO] [1780271866.246553389] [rm0.controller_park4]: odometry: pose x=0.00, y=0.00, theta=0.01
+[mission_controller_node-7] [INFO] [1780271866.485226943] [rm0.mission_controller_node]: [SEE right] rotate err=-14.9deg
+[controller_park4-8] [INFO] [1780271866.830376464] [rm0.controller_park4]: odometry: pose x=0.00, y=0.00, theta=-0.16
+[mission_controller_node-7] [INFO] [1780271866.987429803] [rm0.mission_controller_node]: [SEE right] rotate err=-7.4deg
+[mission_controller_node-7] [INFO] [1780271867.038168465] [rm0.mission_controller_node]: [MISSION] Requested observation: see_right
+[vision_observer_node-4] [INFO] [1780271867.038318214] [rm0.vision_observer_node]: [VISION] Observation requested: see_right
+[vision_observer_node-4] [INFO] [1780271867.097565126] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before see_right
+[controller_park4-8] [INFO] [1780271867.394692972] [rm0.controller_park4]: odometry: pose x=0.00, y=0.00, theta=-0.21
+[controller_park4-8] [INFO] [1780271867.913240125] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=-0.21
+[vision_observer_node-4] [INFO] [1780271867.930550871] [rm0.vision_observer_node]: [VISION] Captured see_right: boundary=269, empty=2627, pose=(0.00,-0.00,-0.21)
+[mission_controller_node-7] [INFO] [1780271867.930641371] [rm0.mission_controller_node]: [MISSION] Observation finished: see_right
+[map_node-5] [INFO] [1780271867.932850151] [rm0.map_node]: [MAP] Updated from observation: boundary=125, empty=1338
+[mission_controller_node-7] [INFO] [1780271867.934285644] [rm0.mission_controller_node]: [STATE] SEE -> ACT_ARC | arc_mode=BOUNDARY
+[slot_detector_node-6] [INFO] [1780271867.943357974] [rm0.slot_detector_node]: [SLOT] Candidate detected, but ordered slot is too small: bottom_width=0.520, top_width=0.520, left_length=0.360, right_length=0.360
+[mission_controller_node-7] [INFO] [1780271867.952885801] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.92, cmd=(0.00,-0.35)
+[mission_controller_node-7] [INFO] [1780271868.470887082] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.92, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271868.511900335] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=-0.38
+[mission_controller_node-7] [INFO] [1780271868.988103533] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.92, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271869.016579516] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=-0.56
+[mission_controller_node-7] [INFO] [1780271869.501792003] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.92, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271869.520036703] [rm0.controller_park4]: odometry: pose x=0.00, y=-0.00, theta=-0.73
+[mission_controller_node-7] [INFO] [1780271870.002024081] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.92, cmd=(0.08,-0.23)
+[controller_park4-8] [INFO] [1780271870.122037563] [rm0.controller_park4]: odometry: pose x=0.01, y=-0.01, theta=-0.93
+[mission_controller_node-7] [INFO] [1780271870.502908031] [rm0.mission_controller_node]: [ARC] travelled=0.04/0.35, clearance=0.90, cmd=(0.08,-0.10)
+[controller_park4-8] [INFO] [1780271870.695327401] [rm0.controller_park4]: odometry: pose x=0.04, y=-0.05, theta=-1.01
+[mission_controller_node-7] [INFO] [1780271871.020632146] [rm0.mission_controller_node]: [ARC] travelled=0.08/0.35, clearance=0.87, cmd=(0.08,-0.00)
+[controller_park4-8] [INFO] [1780271871.227067321] [rm0.controller_park4]: odometry: pose x=0.06, y=-0.08, theta=-1.02
+[mission_controller_node-7] [INFO] [1780271871.537658432] [rm0.mission_controller_node]: [ARC] travelled=0.12/0.35, clearance=0.86, cmd=(0.08,0.03)
+[controller_park4-8] [INFO] [1780271871.818756983] [rm0.controller_park4]: odometry: pose x=0.08, y=-0.12, theta=-1.01
+[mission_controller_node-7] [INFO] [1780271872.052079106] [rm0.mission_controller_node]: [ARC] travelled=0.16/0.35, clearance=0.84, cmd=(0.08,0.05)
+[controller_park4-8] [INFO] [1780271872.414635624] [rm0.controller_park4]: odometry: pose x=0.11, y=-0.16, theta=-0.98
+[mission_controller_node-7] [INFO] [1780271872.554605756] [rm0.mission_controller_node]: [ARC] travelled=0.20/0.35, clearance=0.83, cmd=(0.08,0.05)
+[controller_park4-8] [INFO] [1780271873.001861099] [rm0.controller_park4]: odometry: pose x=0.14, y=-0.20, theta=-0.95
+[mission_controller_node-7] [INFO] [1780271873.068239350] [rm0.mission_controller_node]: [ARC] travelled=0.24/0.35, clearance=0.81, cmd=(0.08,0.06)
+[controller_park4-8] [INFO] [1780271873.513989077] [rm0.controller_park4]: odometry: pose x=0.16, y=-0.24, theta=-0.92
+[mission_controller_node-7] [INFO] [1780271873.570944083] [rm0.mission_controller_node]: [ARC] travelled=0.28/0.35, clearance=0.80, cmd=(0.08,0.06)
+[mission_controller_node-7] [INFO] [1780271874.087634454] [rm0.mission_controller_node]: [ARC] travelled=0.32/0.35, clearance=0.78, cmd=(0.08,0.06)
+[controller_park4-8] [INFO] [1780271874.168209467] [rm0.controller_park4]: odometry: pose x=0.19, y=-0.27, theta=-0.88
+[mission_controller_node-7] [INFO] [1780271874.417599343] [rm0.mission_controller_node]: [SEE] New cycle: mode=center-only, boundary=125, iter=1
+[mission_controller_node-7] [INFO] [1780271874.417967675] [rm0.mission_controller_node]: [STATE] ACT_ARC -> SEE | arc step finished
+[controller_park4-8] [INFO] [1780271874.731201481] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.79
+[controller_park4-8] [INFO] [1780271875.294504369] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.62
+[controller_park4-8] [INFO] [1780271875.797172309] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.47
+[controller_park4-8] [INFO] [1780271876.308898580] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.32
+[controller_park4-8] [INFO] [1780271876.825622992] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.17
+[controller_park4-8] [INFO] [1780271877.404723676] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=0.01
+[controller_park4-8] [INFO] [1780271877.993963849] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=0.18
+[mission_controller_node-7] [INFO] [1780271878.420544380] [rm0.mission_controller_node]: [MISSION] Requested observation: see_center
+[vision_observer_node-4] [INFO] [1780271878.420666879] [rm0.vision_observer_node]: [VISION] Observation requested: see_center
+[controller_park4-8] [INFO] [1780271878.503196049] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=0.28
+[vision_observer_node-4] [INFO] [1780271878.503306799] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before see_center
+[controller_park4-8] [INFO] [1780271879.013922783] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=0.28
+[vision_observer_node-4] [INFO] [1780271879.325900221] [rm0.vision_observer_node]: [VISION] Captured see_center: boundary=409, empty=2811, pose=(0.21,-0.30,0.28)
+[mission_controller_node-7] [INFO] [1780271879.326023221] [rm0.mission_controller_node]: [MISSION] Observation finished: see_center
+[map_node-5] [INFO] [1780271879.328352334] [rm0.map_node]: [MAP] Updated from observation: boundary=158, empty=1473
+[mission_controller_node-7] [INFO] [1780271879.335521298] [rm0.mission_controller_node]: [STATE] SEE -> ACT_ARC | arc_mode=BOUNDARY
+[slot_detector_node-6] [INFO] [1780271879.341669892] [rm0.slot_detector_node]: [SLOT] Actionable slot: entry_edge=0, p=(0.420,-0.280), boundary=158, empty=1473
+[mission_controller_node-7] [INFO] [1780271879.353340709] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271879.630460863] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=0.21
+[mission_controller_node-7] [INFO] [1780271879.868733211] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271880.194223164] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=0.00
+[mission_controller_node-7] [INFO] [1780271880.371024446] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271880.699463675] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.17
+[mission_controller_node-7] [INFO] [1780271880.871346231] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271881.214878136] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.35
+[mission_controller_node-7] [INFO] [1780271881.384474745] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271881.748391423] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.52
+[mission_controller_node-7] [INFO] [1780271881.887259060] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271882.303226519] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.73
+[mission_controller_node-7] [INFO] [1780271882.401020530] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271882.896338465] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-0.94
+[mission_controller_node-7] [INFO] [1780271882.902102020] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271883.396978459] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-1.11
+[mission_controller_node-7] [INFO] [1780271883.420521549] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[controller_park4-8] [INFO] [1780271883.897073704] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.30, theta=-1.29
+[mission_controller_node-7] [INFO] [1780271883.935894468] [rm0.mission_controller_node]: [ARC] travelled=0.00/0.35, clearance=0.77, cmd=(0.00,-0.35)
+[mission_controller_node-7] [INFO] [1780271884.454445413] [rm0.mission_controller_node]: [ARC] travelled=0.01/0.35, clearance=0.76, cmd=(0.08,-0.20)
+[controller_park4-8] [INFO] [1780271884.513894198] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.32, theta=-1.47
+[mission_controller_node-7] [INFO] [1780271884.970865659] [rm0.mission_controller_node]: [ARC] travelled=0.05/0.35, clearance=0.74, cmd=(0.08,-0.04)
+[controller_park4-8] [INFO] [1780271885.102762957] [rm0.controller_park4]: odometry: pose x=0.21, y=-0.36, theta=-1.53
+[mission_controller_node-7] [INFO] [1780271885.484729878] [rm0.mission_controller_node]: [ARC] travelled=0.09/0.35, clearance=0.73, cmd=(0.08,0.03)
+[controller_park4-8] [INFO] [1780271885.630155900] [rm0.controller_park4]: odometry: pose x=0.22, y=-0.40, theta=-1.53
+[mission_controller_node-7] [INFO] [1780271885.987278277] [rm0.mission_controller_node]: [ARC] travelled=0.13/0.35, clearance=0.72, cmd=(0.08,0.06)
+[controller_park4-8] [INFO] [1780271886.219806988] [rm0.controller_park4]: odometry: pose x=0.22, y=-0.45, theta=-1.49
+[mission_controller_node-7] [INFO] [1780271886.487639939] [rm0.mission_controller_node]: [ARC] travelled=0.17/0.35, clearance=0.71, cmd=(0.08,0.08)
+[controller_park4-8] [INFO] [1780271886.835129990] [rm0.controller_park4]: odometry: pose x=0.22, y=-0.50, theta=-1.45
+[mission_controller_node-7] [INFO] [1780271887.002854442] [rm0.mission_controller_node]: [ARC] travelled=0.22/0.35, clearance=0.70, cmd=(0.08,0.08)
+[controller_park4-8] [INFO] [1780271887.411664895] [rm0.controller_park4]: odometry: pose x=0.23, y=-0.55, theta=-1.40
+[mission_controller_node-7] [INFO] [1780271887.519196773] [rm0.mission_controller_node]: [ARC] travelled=0.26/0.35, clearance=0.69, cmd=(0.08,0.09)
+[controller_park4-8] [INFO] [1780271887.996631173] [rm0.controller_park4]: odometry: pose x=0.24, y=-0.59, theta=-1.34
+[mission_controller_node-7] [INFO] [1780271888.020229722] [rm0.mission_controller_node]: [ARC] travelled=0.30/0.35, clearance=0.68, cmd=(0.08,0.05)
+[controller_park4-8] [INFO] [1780271888.515184077] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.63, theta=-1.31
+[mission_controller_node-7] [INFO] [1780271888.535660724] [rm0.mission_controller_node]: [ARC] travelled=0.34/0.35, clearance=0.67, cmd=(0.08,0.08)
+[mission_controller_node-7] [INFO] [1780271888.701926100] [rm0.mission_controller_node]: [SEE] New cycle: mode=center-only, boundary=158, iter=2
+[mission_controller_node-7] [INFO] [1780271888.702224890] [rm0.mission_controller_node]: [STATE] ACT_ARC -> SEE | arc step finished
+[controller_park4-8] [INFO] [1780271889.120646086] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-1.19
+[controller_park4-8] [INFO] [1780271889.695163876] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-1.01
+[controller_park4-8] [INFO] [1780271890.198862894] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.87
+[controller_park4-8] [INFO] [1780271890.713723650] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.72
+[controller_park4-8] [INFO] [1780271891.297300269] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.54
+[controller_park4-8] [INFO] [1780271891.818853073] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.39
+[controller_park4-8] [INFO] [1780271892.420911434] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.21
+[controller_park4-8] [INFO] [1780271892.921223511] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.08
+[mission_controller_node-7] [INFO] [1780271893.154745216] [rm0.mission_controller_node]: [MISSION] Requested observation: see_center
+[vision_observer_node-4] [INFO] [1780271893.154880049] [rm0.vision_observer_node]: [VISION] Observation requested: see_center
+[vision_observer_node-4] [INFO] [1780271893.196897380] [rm0.vision_observer_node]: [VISION] Waiting for stable odom before see_center: v=0.000, w=0.157
+[vision_observer_node-4] [INFO] [1780271893.317888609] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before see_center
+[controller_park4-8] [INFO] [1780271893.514042584] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.02
+[controller_park4-8] [INFO] [1780271894.094564968] [rm0.controller_park4]: odometry: pose x=0.25, y=-0.65, theta=-0.02
+[vision_observer_node-4] [INFO] [1780271894.123904280] [rm0.vision_observer_node]: [VISION] Captured see_center: boundary=383, empty=3315, pose=(0.25,-0.65,-0.02)
+[mission_controller_node-7] [INFO] [1780271894.124101987] [rm0.mission_controller_node]: [MISSION] Observation finished: see_center
+[map_node-5] [INFO] [1780271894.126606350] [rm0.map_node]: [MAP] Updated from observation: boundary=186, empty=1531
+[mission_controller_node-7] [INFO] [1780271894.136018052] [rm0.mission_controller_node]: [VALIDATION] Start: p=(0.42,-0.28), c=(1.12,-0.28), theta=0.00
+[mission_controller_node-7] [INFO] [1780271894.136328426] [rm0.mission_controller_node]: [STATE] SEE -> VALIDATE_SLOT | actionable slot after SEE
+[slot_detector_node-6] [INFO] [1780271894.141028652] [rm0.slot_detector_node]: [SLOT] Actionable slot: entry_edge=3, p=(0.420,-0.290), boundary=186, empty=1531
+[mission_controller_node-7] [INFO] [1780271894.151413017] [rm0.mission_controller_node]: [VALIDATION] MOVE_TO_P: dist=0.41, angle=1.2
+[controller_park4-8] [INFO] [1780271894.597323618] [rm0.controller_park4]: odometry: pose x=0.30, y=-0.61, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271894.652670049] [rm0.mission_controller_node]: [VALIDATION] MOVE_TO_P: dist=0.35, angle=1.2
+[mission_controller_node-7] [INFO] [1780271895.154095496] [rm0.mission_controller_node]: [VALIDATION] MOVE_TO_P: dist=0.28, angle=1.2
+[controller_park4-8] [INFO] [1780271895.197423279] [rm0.controller_park4]: odometry: pose x=0.35, y=-0.53, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271895.654198533] [rm0.mission_controller_node]: [VALIDATION] MOVE_TO_P: dist=0.21, angle=1.2
+[controller_park4-8] [INFO] [1780271895.794239999] [rm0.controller_park4]: odometry: pose x=0.38, y=-0.46, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271896.154265820] [rm0.mission_controller_node]: [VALIDATION] MOVE_TO_P: dist=0.15, angle=1.2
+[controller_park4-8] [INFO] [1780271896.294640410] [rm0.controller_park4]: odometry: pose x=0.39, y=-0.40, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271896.654395441] [rm0.mission_controller_node]: [VALIDATION] MOVE_TO_P: dist=0.10, angle=1.2
+[controller_park4-8] [INFO] [1780271896.795285569] [rm0.controller_park4]: odometry: pose x=0.40, y=-0.36, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271897.171071186] [rm0.mission_controller_node]: [VALIDATION] MOVE_TO_P: dist=0.06, angle=1.2
+[controller_park4-8] [INFO] [1780271897.297101348] [rm0.controller_park4]: odometry: pose x=0.41, y=-0.33, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271897.437924851] [rm0.mission_controller_node]: [MISSION] Requested observation: validation_center
+[vision_observer_node-4] [INFO] [1780271897.438021100] [rm0.vision_observer_node]: [VISION] Observation requested: validation_center
+[vision_observer_node-4] [INFO] [1780271897.495701436] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before validation_center
+[controller_park4-8] [INFO] [1780271897.898771709] [rm0.controller_park4]: odometry: pose x=0.41, y=-0.33, theta=-0.02
+[vision_observer_node-4] [INFO] [1780271898.373195834] [rm0.vision_observer_node]: [VISION] Captured validation_center: boundary=502, empty=2709, pose=(0.41,-0.33,-0.02)
+[mission_controller_node-7] [INFO] [1780271898.373341999] [rm0.mission_controller_node]: [MISSION] Observation finished: validation_center
+[mission_controller_node-7] [INFO] [1780271898.373632665] [rm0.mission_controller_node]: [VALIDATION] Observation validation_center arrived. Waiting 0.25s for map/slot topics before storing the global-map rectangle.
+[map_node-5] [INFO] [1780271898.375680821] [rm0.map_node]: [MAP] Updated from observation: boundary=190, empty=1723
+[slot_detector_node-6] [INFO] [1780271898.391104494] [rm0.slot_detector_node]: [SLOT] Actionable slot: entry_edge=0, p=(0.420,-0.290), boundary=190, empty=1723
+[controller_park4-8] [INFO] [1780271898.501159484] [rm0.controller_park4]: odometry: pose x=0.41, y=-0.33, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271898.637329552] [rm0.mission_controller_node]: [VALIDATION] Stored delayed global-map rectangle after validation_center: valid=True, count=1/3, candidate_seq=5->6, actionable_seq=5->6, actionable_now=True
+[mission_controller_node-7] [INFO] [1780271898.654310300] [rm0.mission_controller_node]: [VALIDATION] MOVE_RIGHT: dist=0.08, angle=1.2
+[controller_park4-8] [INFO] [1780271899.013386877] [rm0.controller_park4]: odometry: pose x=0.41, y=-0.34, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271899.171365127] [rm0.mission_controller_node]: [VALIDATION] MOVE_RIGHT: dist=0.05, angle=1.2
+[mission_controller_node-7] [INFO] [1780271899.219805468] [rm0.mission_controller_node]: [MISSION] Requested observation: validation_right
+[vision_observer_node-4] [INFO] [1780271899.220038592] [rm0.vision_observer_node]: [VISION] Observation requested: validation_right
+[vision_observer_node-4] [INFO] [1780271899.303402300] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before validation_right
+[controller_park4-8] [INFO] [1780271899.612006588] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.35, theta=-0.02
+[vision_observer_node-4] [INFO] [1780271900.163855949] [rm0.vision_observer_node]: [VISION] Captured validation_right: boundary=482, empty=2690, pose=(0.42,-0.35,-0.02)
+[mission_controller_node-7] [INFO] [1780271900.164006198] [rm0.mission_controller_node]: [MISSION] Observation finished: validation_right
+[mission_controller_node-7] [INFO] [1780271900.164606153] [rm0.mission_controller_node]: [VALIDATION] Observation validation_right arrived. Waiting 0.25s for map/slot topics before storing the global-map rectangle.
+[map_node-5] [INFO] [1780271900.166452436] [rm0.map_node]: [MAP] Updated from observation: boundary=193, empty=1793
+[slot_detector_node-6] [INFO] [1780271900.182241773] [rm0.slot_detector_node]: [SLOT] Actionable slot: entry_edge=0, p=(0.420,-0.290), boundary=193, empty=1793
+[controller_park4-8] [INFO] [1780271900.217440555] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.35, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271900.419946875] [rm0.mission_controller_node]: [VALIDATION] Stored delayed global-map rectangle after validation_right: valid=True, count=2/3, candidate_seq=6->7, actionable_seq=6->7, actionable_now=True
+[mission_controller_node-7] [INFO] [1780271900.435513297] [rm0.mission_controller_node]: [VALIDATION] MOVE_LEFT: dist=0.19, angle=1.2
+[controller_park4-8] [INFO] [1780271900.726167591] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.33, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271900.937323534] [rm0.mission_controller_node]: [VALIDATION] MOVE_LEFT: dist=0.15, angle=1.2
+[controller_park4-8] [INFO] [1780271901.294909952] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.26, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271901.454853401] [rm0.mission_controller_node]: [VALIDATION] MOVE_LEFT: dist=0.09, angle=1.2
+[controller_park4-8] [INFO] [1780271901.903048156] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.22, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271901.954905271] [rm0.mission_controller_node]: [VALIDATION] MOVE_LEFT: dist=0.06, angle=1.2
+[mission_controller_node-7] [INFO] [1780271902.221409353] [rm0.mission_controller_node]: [MISSION] Requested observation: validation_left
+[vision_observer_node-4] [INFO] [1780271902.221598019] [rm0.vision_observer_node]: [VISION] Observation requested: validation_left
+[vision_observer_node-4] [INFO] [1780271902.314496512] [rm0.vision_observer_node]: [VISION] Settling for 0.75s before validation_left
+[controller_park4-8] [INFO] [1780271902.405937346] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.20, theta=-0.02
+[controller_park4-8] [INFO] [1780271903.004158142] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.20, theta=-0.02
+[vision_observer_node-4] [INFO] [1780271903.160705899] [rm0.vision_observer_node]: [VISION] Captured validation_left: boundary=544, empty=2438, pose=(0.42,-0.20,-0.02)
+[mission_controller_node-7] [INFO] [1780271903.160862940] [rm0.mission_controller_node]: [MISSION] Observation finished: validation_left
+[mission_controller_node-7] [INFO] [1780271903.161159563] [rm0.mission_controller_node]: [VALIDATION] Observation validation_left arrived. Waiting 0.25s for map/slot topics before storing the global-map rectangle.
+[map_node-5] [INFO] [1780271903.163366177] [rm0.map_node]: [MAP] Updated from observation: boundary=199, empty=1858
+[slot_detector_node-6] [INFO] [1780271903.179312806] [rm0.slot_detector_node]: [SLOT] Actionable slot: entry_edge=0, p=(0.420,-0.290), boundary=199, empty=1858
+[mission_controller_node-7] [INFO] [1780271903.418203652] [rm0.mission_controller_node]: [VALIDATION] Stored delayed global-map rectangle after validation_left: valid=True, count=3/3, candidate_seq=7->8, actionable_seq=7->8, actionable_now=True
+[mission_controller_node-7] [INFO] [1780271903.438337343] [rm0.mission_controller_node]: [VALIDATION] pair 0-1: same=True, center=0.00, size=0.00, corner=0.00, theta_diag=0.0
+[mission_controller_node-7] [INFO] [1780271903.438795632] [rm0.mission_controller_node]: [VALIDATION] pair 0-2: same=True, center=0.00, size=0.00, corner=0.00, theta_diag=0.0
+[mission_controller_node-7] [INFO] [1780271903.439281755] [rm0.mission_controller_node]: [VALIDATION] pair 1-2: same=True, center=0.00, size=0.00, corner=0.00, theta_diag=0.0
+[mission_controller_node-7] [INFO] [1780271903.439864752] [rm0.mission_controller_node]: [VALIDATION] latest_actionable vs stable: same=True, center=0.00, size=0.00, corner=0.00
+[mission_controller_node-7] [INFO] [1780271903.440165417] [rm0.mission_controller_node]: [VALIDATION] Accepted: stable_pair=(0, 2). Returning to pre-parking point p before delegation: p=(0.420,-0.280), theta=0.000
+[mission_controller_node-7] [INFO] [1780271903.453485433] [rm0.mission_controller_node]: [VALIDATION] RETURN_TO_P: dist=0.08, angle=1.2
+[controller_park4-8] [INFO] [1780271903.597172755] [rm0.controller_park4]: odometry: pose x=0.42, y=-0.21, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271903.954577090] [rm0.mission_controller_node]: [VALIDATION] RETURN_TO_P: dist=0.05, angle=1.2
+[mission_controller_node-7] [INFO] [1780271904.017492858] [rm0.mission_controller_node]: [STATE] VALIDATE_SLOT -> DELEGATE | validation accepted; robot returned to pre-parking point p
+[mission_controller_node-7] [INFO] [1780271904.037493883] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 1/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.037751049] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.038105464] [rm0.controller_park4]: [PARK4] Received parking_target. Switching IDLE -> START.
+[controller_park4-8] [INFO] [1780271904.041228698] [rm0.controller_park4]: [PARK4] Using ordered entry edge bottom_l->bottom_r: (0.92,-0.52) -> (0.92,-0.06)
+[controller_park4-8] [INFO] [1780271904.041554113] [rm0.controller_park4]: [PARK4] space dimensions: width_bottom=0.460, width_top=0.460, len_left=0.440, len_right=0.440
+[controller_park4-8] [INFO] [1780271904.041876611] [rm0.controller_park4]: [PARK4] geometry: c=(1.140,-0.290), m=(0.920,-0.290), n=(-1.000,0.000), p=(0.420,-0.290), parking_theta=0.000
+[controller_park4-8] [INFO] [1780271904.042151652] [rm0.controller_park4]: [PARK4] START: mission should already be near p; dist_to_p=0.059. Skipping MOVE_TO_P and starting ROTATE_TO_FACE_PARKING.
+[mission_controller_node-7] [INFO] [1780271904.053864176] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 2/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.054001467] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.054293257] [rm0.controller_park4]: [PARK4] Received parking_target while state=ROTATE_TO_FACE_PARKING; keeping current state.
+[controller_park4-8] [INFO] [1780271904.058040405] [rm0.controller_park4]: [PARK4] ROTATE_TO_FACE_PARKING complete -> FORWARD
+[mission_controller_node-7] [INFO] [1780271904.070804966] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 3/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.071092590] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.071397588] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[controller_park4-8] [INFO] [1780271904.074669364] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.418,-0.231,-0.022), dist=0.724, angle_err=1.2 deg, body_err=(x=0.723, y=-0.043), cmd=(x=0.120, y=-0.039, w=0.000)
+[mission_controller_node-7] [INFO] [1780271904.086616971] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 4/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.086814136] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.087158718] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.103368720] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 5/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.103656343] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.103950384] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.119086891] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 6/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.119408473] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.119746221] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.135142894] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 7/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.135322351] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.135608600] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.154654338] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 8/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.154965336] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.155271252] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.170776966] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 9/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.170997715] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.171313588] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.185599808] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 10/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.185863973] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.186191680] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[controller_park4-8] [INFO] [1780271904.190036369] [rm0.controller_park4]: odometry: pose x=0.43, y=-0.24, theta=-0.02
+[mission_controller_node-7] [INFO] [1780271904.201313479] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 11/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.201496603] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.201775185] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.219505805] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 12/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.219714929] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.219994219] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.237924838] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 13/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.238118003] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.238411710] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.254004841] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 14/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.254213299] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.254500297] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.268306228] [rm0.mission_controller_node]: [DELEGATE] parking_target publish 15/15, subscribers=1
+[controller_park4-8] [INFO] [1780271904.268546602] [rm0.controller_park4]: [PARK4] ordered target: top_l=(1.360,-0.520), top_r=(1.360,-0.060), bottom_l=(0.920,-0.520), bottom_r=(0.920,-0.060), center=(1.140,-0.290)
+[controller_park4-8] [INFO] [1780271904.268828642] [rm0.controller_park4]: [PARK4] Received parking_target while state=FORWARD; keeping current state.
+[mission_controller_node-7] [INFO] [1780271904.287470632] [rm0.mission_controller_node]: [STATE] DELEGATE -> DONE | parking target delegated; park4 owns cmd_vel
+[controller_park4-8] [INFO] [1780271904.477102057] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.454,-0.244,-0.022), dist=0.688, angle_err=1.2 deg, body_err=(x=0.687, y=-0.031), cmd=(x=0.120, y=-0.028, w=0.000)
+[controller_park4-8] [INFO] [1780271904.691655108] [rm0.controller_park4]: odometry: pose x=0.49, y=-0.25, theta=-0.02
+[controller_park4-8] [INFO] [1780271904.877383511] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.490,-0.254,-0.022), dist=0.651, angle_err=1.2 deg, body_err=(x=0.651, y=-0.022), cmd=(x=0.120, y=-0.020, w=0.000)
+[controller_park4-8] [INFO] [1780271905.291337230] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.550,-0.263,-0.022), dist=0.591, angle_err=1.2 deg, body_err=(x=0.591, y=-0.014), cmd=(x=0.120, y=-0.012, w=0.000)
+[controller_park4-8] [INFO] [1780271905.291799019] [rm0.controller_park4]: odometry: pose x=0.56, y=-0.26, theta=-0.02
+[controller_park4-8] [INFO] [1780271905.711366209] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.609,-0.270,-0.021), dist=0.531, angle_err=1.2 deg, body_err=(x=0.531, y=-0.009), cmd=(x=0.120, y=-0.008, w=0.000)
+[controller_park4-8] [INFO] [1780271905.891451640] [rm0.controller_park4]: odometry: pose x=0.63, y=-0.27, theta=-0.02
+[controller_park4-8] [INFO] [1780271906.125622218] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.657,-0.275,-0.021), dist=0.483, angle_err=1.2 deg, body_err=(x=0.483, y=-0.005), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271906.497972103] [rm0.controller_park4]: odometry: pose x=0.71, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271906.526194504] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.705,-0.276,-0.021), dist=0.435, angle_err=1.2 deg, body_err=(x=0.435, y=-0.005), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271906.944554242] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.753,-0.277,-0.021), dist=0.387, angle_err=1.2 deg, body_err=(x=0.387, y=-0.004), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271907.010983117] [rm0.controller_park4]: odometry: pose x=0.77, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271907.360764241] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.802,-0.278,-0.022), dist=0.339, angle_err=1.2 deg, body_err=(x=0.339, y=-0.004), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271907.591554752] [rm0.controller_park4]: odometry: pose x=0.84, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271907.761213194] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.850,-0.279,-0.022), dist=0.291, angle_err=1.3 deg, body_err=(x=0.291, y=-0.004), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271908.175187037] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.898,-0.280,-0.022), dist=0.243, angle_err=1.3 deg, body_err=(x=0.243, y=-0.004), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271908.192067077] [rm0.controller_park4]: odometry: pose x=0.91, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271908.577541397] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.946,-0.281,-0.023), dist=0.195, angle_err=1.3 deg, body_err=(x=0.194, y=-0.004), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271908.693099652] [rm0.controller_park4]: odometry: pose x=0.97, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271908.991181909] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(0.994,-0.283,-0.022), dist=0.146, angle_err=1.3 deg, body_err=(x=0.146, y=-0.004), cmd=(x=0.120, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271909.290247870] [rm0.controller_park4]: odometry: pose x=1.04, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271909.411645179] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(1.049,-0.284,-0.022), dist=0.091, angle_err=1.3 deg, body_err=(x=0.091, y=-0.004), cmd=(x=0.082, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271909.791967524] [rm0.controller_park4]: odometry: pose x=1.08, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271909.824714026] [rm0.controller_park4]: [PARK4] FORWARD_TO_CENTER: target=(1.140,-0.290,0.000), pose=(1.079,-0.284,-0.022), dist=0.061, angle_err=1.2 deg, body_err=(x=0.061, y=-0.004), cmd=(x=0.055, y=-0.004, w=0.000)
+[controller_park4-8] [INFO] [1780271909.928094384] [rm0.controller_park4]: [PARK4] FORWARD complete -> PARKED
+[controller_park4-8] [INFO] [1780271909.941190235] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271910.292343977] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271910.792857803] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271910.944051837] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271911.390292020] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271911.902452663] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271911.958529632] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271912.498354012] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271912.961428984] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271913.090321755] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271913.590488793] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271913.977288730] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271914.192256154] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271914.699326656] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271914.991181028] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271915.291537566] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271915.792674723] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271915.991404352] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271916.392123429] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271917.000681548] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271917.009110547] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271917.591251091] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271918.010289200] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271918.192245705] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271918.692708950] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271919.026005655] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271919.289963334] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271919.791948736] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
+[controller_park4-8] [INFO] [1780271920.026175021] [rm0.controller_park4]: [PARK4] PARKED: holding zero velocity.
+[controller_park4-8] [INFO] [1780271920.390795737] [rm0.controller_park4]: odometry: pose x=1.09, y=-0.28, theta=-0.02
