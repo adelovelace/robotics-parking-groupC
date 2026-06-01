@@ -1,0 +1,1 @@
+/Users/jimenatagle/Documents/1.Education/2.USI/4.semester/Robotics/project/robotics-parking-groupC/.pixi/envs/default/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh

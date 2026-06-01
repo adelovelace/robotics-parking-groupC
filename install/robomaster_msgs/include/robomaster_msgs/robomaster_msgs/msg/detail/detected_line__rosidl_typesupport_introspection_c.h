@@ -1,0 +1,1 @@
+/Users/jimenatagle/Documents/1.Education/2.USI/4.semester/Robotics/project/robotics-parking-groupC/build/robomaster_msgs/rosidl_typesupport_introspection_c/robomaster_msgs/msg/detail/detected_line__rosidl_typesupport_introspection_c.h

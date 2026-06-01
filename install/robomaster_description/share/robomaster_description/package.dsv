@@ -1,0 +1,8 @@
+source;share/robomaster_description/hook/cmake_prefix_path.ps1
+source;share/robomaster_description/hook/cmake_prefix_path.dsv
+source;share/robomaster_description/hook/cmake_prefix_path.sh
+source;share/robomaster_description/local_setup.bash
+source;share/robomaster_description/local_setup.dsv
+source;share/robomaster_description/local_setup.ps1
+source;share/robomaster_description/local_setup.sh
+source;share/robomaster_description/local_setup.zsh

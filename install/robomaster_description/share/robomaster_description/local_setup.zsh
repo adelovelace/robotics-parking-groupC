@@ -1,0 +1,1 @@
+/Users/jimenatagle/Documents/1.Education/2.USI/4.semester/Robotics/project/robotics-parking-groupC/build/robomaster_description/ament_cmake_environment_hooks/local_setup.zsh

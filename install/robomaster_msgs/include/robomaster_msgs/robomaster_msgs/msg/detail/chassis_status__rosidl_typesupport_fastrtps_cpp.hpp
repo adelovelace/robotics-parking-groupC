@@ -1,0 +1,1 @@
+/Users/jimenatagle/Documents/1.Education/2.USI/4.semester/Robotics/project/robotics-parking-groupC/build/robomaster_msgs/rosidl_typesupport_fastrtps_cpp/robomaster_msgs/msg/detail/chassis_status__rosidl_typesupport_fastrtps_cpp.hpp

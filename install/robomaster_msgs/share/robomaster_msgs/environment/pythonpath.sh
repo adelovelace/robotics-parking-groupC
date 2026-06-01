@@ -1,0 +1,1 @@
+/Users/jimenatagle/Documents/1.Education/2.USI/4.semester/Robotics/project/robotics-parking-groupC/build/robomaster_msgs/ament_cmake_environment_hooks/pythonpath.sh

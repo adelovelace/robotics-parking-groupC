@@ -1,0 +1,18 @@
+<!--
+    Combined mission launcher for exploration and parking.
+    Launches the RoboMaster driver and the controller node.
+ -->
+
+<launch>
+  <arg name="name" default="rm0"/>
+
+  <!-- Launch the RoboMaster driver with ToF sensors -->
+  <include file="$(find-pkg-share robomaster_example)/launch/ep_tof.launch">
+    <arg name="name" value="$(var name)"/>
+  </include>
+
+  <!-- Launch the navigation and parking controller -->
+  <node pkg="robomaster_example" exec="controller_node" namespace="$(var name)" output="screen" />
+  <node pkg="robomaster_example" exec="controller_park4" namespace="$(var name)" output="screen" />
+
+</launch>
